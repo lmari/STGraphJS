@@ -13,8 +13,10 @@ _env_data = {
   timed: false, trace: 0,
   title: "Attrattore di Lorenz",
   charts: [
-    { id: "chart1", ctx: "canvas1", series: "[{x:x, y:y}]", line: "(true, 'red', 0.5)" },
-    { id: "chart2", ctx: "canvas2", series: "[{x:x, y:z}]", line: "(false)", points: "(true, 'green', 0.5)" },
-    { id: "chart3", ctx: "canvas3", series: "[{x:y, y:z}]" },
+    { id: "chart1", series: "[{x:x, y:y}]", line: "(true, 'red', 0.5)" },
+    { id: "chart2", series: "[{x:x, y:z}]", line: "(false)", points: "(true, 'green', 0.5)" },
+    { id: "chart3", series: "[{x:y, y:z}]" },
+  ],
+  tables: [
   ],
 };

@@ -1,13 +1,19 @@
 'use strict';
 
 class _Chart {
-  constructor(context, model, series) {
-    this.context = context;
+  constructor(container, model, series) {
+    this.container = container;
+    let domEl = '_Chart_' + _Chart.count++;
+    let s = '<div style="position:relative; left:10px; width:600px;">';
+    s += `<canvas id="${domEl}" style="border:2px solid #FF9933;"></canvas>`;
+    s += '</div>';
+    $('#'+container).append(s);
+    this.domEl = $('#'+domEl);
     this.model = model;
     this.series = series.map(s => s.x == undefined ? {x:this.model.Time, y:s} : s);
     var datasets = new Array();
     for(let i = 0; i < series.length; i++) datasets[i] = this.initDataset();
-    this.chart = new Chart(context, {
+    this.chart = new Chart(domEl, {
       type: 'scatter',
       data: { datasets: datasets },
       options: {
@@ -57,12 +63,6 @@ class _Chart {
     this.chart.data.datasets[dataset].pointBackgroundColor = color;
     this.chart.data.datasets[dataset].pointBorderColor = color;
   }
-
-  static genHTML(a) {
-    let s = '<div style="position:relative; left:10px; width:600px;">';
-    s += `<canvas id="${a.ctx}" style="border:2px solid #FF9933;"></canvas>`;
-    s += '</div>';
-    return s;
-  }
-
 }
+
+_Chart.count = 0;

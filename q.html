@@ -6,15 +6,14 @@
 <script src='./model.js'></script>
 <script src='./functions.js'></script>
 <script src='./chart.js'></script>
+<script src='./table.js'></script>
 
-<script src='./mod/lorenz.js'></script>
+<script src='./mod/keynes.js'></script>
 <script>
 $(document).ready(function() {
   var env = new _Env(_env_data.timed, _env_data.trace, _env_data.simDelay);
   $('#page_title').html(_env_data.title);
   var model = new _Model(env, _model_data.time0, _model_data.time1, _model_data.timeD);
-
-  $('#charts').html(_env_data.charts.map(x => _Chart.genHTML(x)).join());
 
   for(let __x of _model_data.parameters) {
     eval(`var ${__x.id} = new Parameter("${__x.id}", model, ${__x.val})`);
@@ -23,14 +22,18 @@ $(document).ready(function() {
     eval(`var ${__x.id} = new Variable("${__x.id}", model, ${__x.out})`);
   }
   for(let __x of _model_data.variables) {
-    if(__x.eta != undefined) eval(`${__x.id}.setAlgebraic(${__x.eta},${__x.args})`);
-    if(__x.phi != undefined) eval(`${__x.id}.setState(${__x.phi},${__x.args},${__x.init})`);
+    if(__x.eta != undefined) eval(`${__x.id}.setAlgebraic(${__x.eta}, ${__x.args})`);
+    if(__x.phi != undefined) eval(`${__x.id}.setState(${__x.phi}, ${__x.args}, ${__x.init})`);
   }
 
   for(let __x of _env_data.charts) {
-    eval(`var ${__x.id} = new _Chart("${__x.ctx}", model, ${__x.series})`);
+    eval(`var ${__x.id} = new _Chart("charts", model, ${__x.series})`);
     if(__x.line != undefined) eval(`${__x.id}.setLine${__x.line}`);
     if(__x.points != undefined) eval(`${__x.id}.setPoints${__x.points}`);
+  }
+
+  for(let __x of _env_data.tables) {
+    new _Table("tables", model, eval(__x.series));
   }
 
   model.eval();
@@ -40,6 +43,7 @@ $(document).ready(function() {
 <body>
 <h1 id='page_title'></h1>
 <div id="charts"></div>
+<div id="tables"></div>
 <div id="trace"></div>
 </body>
 </html>

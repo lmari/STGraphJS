@@ -10,8 +10,11 @@ _model_data = {
 
 _env_data = {
   simDelay: 10,
-  timed: true, trace: 3,
+  timed: true, trace: 0,
   title: "Capitale con interessi",
   charts: [
+  ],
+  tables: [
+    { series: "[model.Time, capitale]" },
   ],
 };

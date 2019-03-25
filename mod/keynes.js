@@ -18,9 +18,11 @@ _model_data = {
 
 _env_data = {
   simDelay: 10,
-  timed: false, trace: 2,
+  timed: true, trace: 3,
   title: "Prezzo, domanda, offerta",
   charts: [
-    { id: "chart1", ctx: "canvas1", series: "[prezzo]", line: "(true, 'blue', 1)" },
+    { id: "chart1", series: "[prezzo]", line: "(true, 'blue', 1)" },
+  ],
+  tables: [
   ],
 };
