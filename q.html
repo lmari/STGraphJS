@@ -1,6 +1,8 @@
 <html>
 <head>
-<script src="res/jquery-3.3.1.min.js"></script>
+<link rel="stylesheet" href="res/jquery-ui.min.css">
+<script src="res/jquery.min.js"></script>
+<script src="res/jquery-ui.min.js"></script>
 <script src="res/Chart.bundle.min.js"></script>
 <script src='./env.js'></script>
 <script src='./model.js'></script>
@@ -8,8 +10,20 @@
 <script src='./chart.js'></script>
 <script src='./table.js'></script>
 
-<script src='./mod/keynes.js'></script>
+<script src='./mod/capitale.js'></script>
 <script>
+$(function() {
+  $('#charts').dialog({
+    autoOpen: true,
+    width: 'auto',
+    left: 10,
+  });
+  $('#tables').dialog({
+    autoOpen: true,
+    width: 'auto',
+  });
+});
+
 $(document).ready(function() {
   var env = new _Env(_env_data.timed, _env_data.trace, _env_data.simDelay);
   $('#page_title').html(_env_data.title);
@@ -26,21 +40,16 @@ $(document).ready(function() {
     if(__x.phi != undefined) eval(`${__x.id}.setState(${__x.phi}, ${__x.args}, ${__x.init})`);
   }
 
-  for(let __x of _env_data.charts) {
-    eval(`var ${__x.id} = new _Chart("charts", model, ${__x.series})`);
-    if(__x.line != undefined) eval(`${__x.id}.setLine${__x.line}`);
-    if(__x.points != undefined) eval(`${__x.id}.setPoints${__x.points}`);
-  }
+  for(let __x of _env_data.charts) new _Chart("charts", model, __x, eval(__x.series));
 
-  for(let __x of _env_data.tables) {
-    new _Table("tables", model, eval(__x.series));
-  }
+  for(let __x of _env_data.tables) new _Table("tables", model, __x, eval(__x.series));
 
   model.eval();
 });
 </script>
 </head>
 <body>
+<div id="toolbar"></div>
 <h1 id='page_title'></h1>
 <div id="charts"></div>
 <div id="tables"></div>

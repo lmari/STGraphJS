@@ -1,5 +1,5 @@
 _model_data = {
-  time0: 0, time1: 10, timeD: 1,
+  time0: 0, time1: 7, timeD: 1,
   parameters: [
     { id: "p0", val: 0 },
     { id: "a", val: 100 },
@@ -18,11 +18,12 @@ _model_data = {
 
 _env_data = {
   simDelay: 10,
-  timed: true, trace: 3,
+  timed: true, trace: 0,
   title: "Prezzo, domanda, offerta",
   charts: [
-    { id: "chart1", series: "[prezzo]", line: "(true, 'blue', 1)" },
+    { title: "chart1", series: "[prezzo]", line: "(true, 'blue', 1)", points: "(true, 'green', 5)" },
   ],
   tables: [
+    { title: "table1", series: "[model.Time, prezzo]" },
   ],
 };

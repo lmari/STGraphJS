@@ -13,8 +13,8 @@ class _Env {
     //if(model.env.trace == 2) $('#trace').append('<hr> ListOutVars> ' + _Model.list(model.outvars) + '<hr>');
     //else if(model.env.trace == 3) $('#trace').append('<hr> ListVars> ' + _Model.list(model.vars) + '<hr>');
     if(model.env.trace == 2) {
-      model.env._chart = new _Chart('trace', model, model.outvars, true);
-      model.env._table = new _Table('trace', model, [model.Time].concat(model.outvars));
+      new _Chart('trace', model, model.outvars, true);
+      new _Table('trace', model, [model.Time].concat(model.outvars));
     } else if(model.env.trace == 3) {
       new _Chart('trace', model, model.vars, true);
       new _Table('trace', model, [model.Time].concat(model.vars));

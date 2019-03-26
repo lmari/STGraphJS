@@ -1,8 +1,9 @@
 'use strict';
 
 class _Table {
-  constructor(container, model, series) {
+  constructor(container, model, data, series) {
     this.container = container;
+    $('#'+container).dialog('option', 'title', data.title);
     let domEl = '_Table_' + _Table.count++;
     $('#'+container).append(`<table id='${domEl}' border='1'>`);
     this.domEl = $('#'+domEl);

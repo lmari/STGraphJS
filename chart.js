@@ -1,8 +1,9 @@
 'use strict';
 
 class _Chart {
-  constructor(container, model, series) {
+  constructor(container, model, data, series) {
     this.container = container;
+    $('#'+container).dialog('option', 'title', data.title);
     let domEl = '_Chart_' + _Chart.count++;
     let s = '<div style="position:relative; left:10px; width:600px;">';
     s += `<canvas id="${domEl}" style="border:2px solid #FF9933;"></canvas>`;
@@ -23,6 +24,8 @@ class _Chart {
         scales: { xAxes: [this.initAxis()], yAxes: [this.initAxis()] }
       }
     });
+    if(data.line != undefined) eval(`this.setLine${data.line}`);
+    if(data.points != undefined) eval(`this.setPoints${data.points}`);
     model.env._charts.push(this);
   }
 
