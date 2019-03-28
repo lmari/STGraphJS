@@ -12,12 +12,20 @@ class _Env {
   static preEvalCallback(model) { // default callback: before starting evaluation
     //if(model.env.trace == 2) $('#trace').append('<hr> ListOutVars> ' + _Model.list(model.outvars) + '<hr>');
     //else if(model.env.trace == 3) $('#trace').append('<hr> ListVars> ' + _Model.list(model.vars) + '<hr>');
+    if(model.env.trace > 1) $('body').append('<div id="trace">');
+
     if(model.env.trace == 2) {
-      new _Chart('trace', model, model.outvars, true);
-      new _Table('trace', model, [model.Time].concat(model.outvars));
+      new _Chart(model, '', model.outvars, 'trace');
+      new _Table(model, '', [model.Time].concat(model.outvars), 'trace');
     } else if(model.env.trace == 3) {
-      new _Chart('trace', model, model.vars, true);
-      new _Table('trace', model, [model.Time].concat(model.vars));
+      new _Chart(model, '', model.vars, 'trace');
+      new _Table(model, '', [model.Time].concat(model.vars), 'trace');
+    }
+    if(model.env.trace > 1) {
+      let container = $('#trace');
+      container.dialog({ autoOpen: true, width: 'auto' });
+      container.dialog('option', 'title', 'Trace');
+      container.dialog({ position: { my: "left top", at: 'left top', of: window } });
     }
   }
 

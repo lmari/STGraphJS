@@ -1,14 +1,21 @@
 'use strict';
 
 class _Chart {
-  constructor(container, model, data, series) {
-    this.container = container;
-    $('#'+container).dialog('option', 'title', data.title);
+  constructor(model, data, series, containerId) {
+    if(containerId) { this.container = containerId; }
+    else {
+      this.container = '_DivChart_' + _Chart.count;
+      $('body').append(`<div id='${this.container}'>`)
+    }
+    let container = $('#'+this.container);
+    container.dialog({ autoOpen: true, width: 'auto' });
+    container.dialog('option', 'title', data.title);
+    container.dialog({ position: { my: "left top", at: `left+${data.left} top+${data.top}`, of: window } });
     let domEl = '_Chart_' + _Chart.count++;
     let s = '<div style="position:relative; left:10px; width:600px;">';
     s += `<canvas id="${domEl}" style="border:2px solid #FF9933;"></canvas>`;
     s += '</div>';
-    $('#'+container).append(s);
+    container.append(s);
     this.domEl = $('#'+domEl);
     this.model = model;
     this.series = series.map(s => s.x == undefined ? {x:this.model.Time, y:s} : s);

@@ -18,12 +18,12 @@ _model_data = {
 
 _env_data = {
   simDelay: 10,
-  timed: true, trace: 0,
+  timed: true, trace: 2,
   title: "Prezzo, domanda, offerta",
   charts: [
-    { title: "chart1", series: "[prezzo]", line: "(true, 'blue', 1)", points: "(true, 'green', 5)" },
+    { title: "chart1", top: 50, left: 10, series: "[prezzo]", line: "(true, 'blue', 1)", points: "(true, 'green', 5)" },
   ],
   tables: [
-    { title: "table1", series: "[model.Time, prezzo]" },
+    { title: "table1", top: 450, left: 10, series: "[model.Time, prezzo]" },
   ],
 };

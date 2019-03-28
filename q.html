@@ -12,38 +12,20 @@
 
 <script src='./mod/capitale.js'></script>
 <script>
-$(function() {
-  $('#charts').dialog({
-    autoOpen: true,
-    width: 'auto',
-    left: 10,
-  });
-  $('#tables').dialog({
-    autoOpen: true,
-    width: 'auto',
-  });
-});
-
 $(document).ready(function() {
   var env = new _Env(_env_data.timed, _env_data.trace, _env_data.simDelay);
   $('#page_title').html(_env_data.title);
   var model = new _Model(env, _model_data.time0, _model_data.time1, _model_data.timeD);
 
-  for(let __x of _model_data.parameters) {
-    eval(`var ${__x.id} = new Parameter("${__x.id}", model, ${__x.val})`);
-  }
-  for(let __x of _model_data.variables) {
-    eval(`var ${__x.id} = new Variable("${__x.id}", model, ${__x.out})`);
-  }
+  for(let __x of _model_data.parameters) eval(`var ${__x.id} = new Parameter("${__x.id}", model, ${__x.val})`);
+  for(let __x of _model_data.variables) eval(`var ${__x.id} = new Variable("${__x.id}", model, ${__x.out})`);
   for(let __x of _model_data.variables) {
     if(__x.eta != undefined) eval(`${__x.id}.setAlgebraic(${__x.eta}, ${__x.args})`);
     if(__x.phi != undefined) eval(`${__x.id}.setState(${__x.phi}, ${__x.args}, ${__x.init})`);
   }
 
-  for(let __x of _env_data.charts) new _Chart("charts", model, __x, eval(__x.series));
-
-  for(let __x of _env_data.tables) new _Table("tables", model, __x, eval(__x.series));
-
+  _env_data.charts.forEach(__x => new _Chart(model, __x, eval(__x.series)));
+  _env_data.tables.forEach(__x => new _Table(model, __x, eval(__x.series)));
   model.eval();
 });
 </script>
@@ -51,8 +33,5 @@ $(document).ready(function() {
 <body>
 <div id="toolbar"></div>
 <h1 id='page_title'></h1>
-<div id="charts"></div>
-<div id="tables"></div>
-<div id="trace"></div>
 </body>
 </html>
