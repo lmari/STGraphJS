@@ -10,7 +10,7 @@ _model_data = {
 
 _env_data = {
   simDelay: 10,
-  timed: true, trace: 0,
+  timed: true, trace: 3,
   title: "Capitale con interessi",
   charts: [
   ],

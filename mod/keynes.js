@@ -1,7 +1,7 @@
 _model_data = {
   time0: 0, time1: 7, timeD: 1,
   parameters: [
-    { id: "p0", val: 0 },
+    { id: "p0", val: 100 },
     { id: "a", val: 100 },
     { id: "b", val: -0.5 },
     { id: "c", val: 50 },
@@ -18,12 +18,16 @@ _model_data = {
 
 _env_data = {
   simDelay: 10,
-  timed: true, trace: 2,
+  timed: true, trace: 0,
   title: "Prezzo, domanda, offerta",
   charts: [
-    { title: "chart1", top: 50, left: 10, series: "[prezzo]", line: "(true, 'blue', 1)", points: "(true, 'green', 5)" },
+    { title: "chart1", top: 50, left: 10,
+      xaxis: { min: -0.5, max: 7.5, step: 1 },
+      series: "[prezzo]",
+      lines: [{show: true, color: 'red', width: 1}],
+      points: [{show: true, color: 'green', size: 5}] },
   ],
   tables: [
-    { title: "table1", top: 450, left: 10, series: "[model.Time, prezzo]" },
+    { title: "table1", top: 450, left: 10, series: "[model.Time, prezzo]", decimals: [0, 2], alignments: ['center', 'right'] },
   ],
 };

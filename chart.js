@@ -31,8 +31,10 @@ class _Chart {
         scales: { xAxes: [this.initAxis()], yAxes: [this.initAxis()] }
       }
     });
-    if(data.line != undefined) eval(`this.setLine${data.line}`);
-    if(data.points != undefined) eval(`this.setPoints${data.points}`);
+    if(data.xaxis != undefined) this.setAxis('x', data.xaxis);
+    if(data.yaxis != undefined) this.setAxis('y', data.yaxis);
+    if(data.lines != undefined) this.setLines(data.lines);
+    if(data.points != undefined) this.setPoints(data.points);
     model.env._charts.push(this);
   }
 
@@ -62,16 +64,29 @@ class _Chart {
     if(withRefresh) this.chart.update();
   }
 
-  setLine(show, color, width, dataset=0) {
-    this.chart.data.datasets[dataset].showLine = show;
-    this.chart.data.datasets[dataset].borderColor = color;
-    this.chart.data.datasets[dataset].borderWidth = width;
+  setAxis(axis, data) {
+    let a = axis == 'x' ? this.chart.options.scales.xAxes[0].ticks : this.chart.options.scales.yAxes[0].ticks;
+    a.min = data.min;
+    a.max = data.max;
+    a.stepSize = data.step;
   }
 
-  setPoints(show, color, radius, dataset=0) {
-    this.chart.data.datasets[dataset].pointRadius = show ? radius : 0;
-    this.chart.data.datasets[dataset].pointBackgroundColor = color;
-    this.chart.data.datasets[dataset].pointBorderColor = color;
+  setLines(data) {
+    data.forEach((d,i) => {
+      let l = this.chart.data.datasets[i];
+      l.showLine = d.show;
+      l.borderColor = d.color;
+      l.borderWidth = d.width;
+    });
+  }
+
+  setPoints(data) {
+    data.forEach((d,i) => {
+      let l = this.chart.data.datasets[i];
+      l.pointRadius = d.show ? d.size : 0;
+      l.pointBackgroundColor = d.color;
+      l.pointBorderColor = d.color;
+    });
   }
 }
 
