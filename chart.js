@@ -60,7 +60,18 @@ class _Chart {
   }
 
   update(withRefresh=true) {
-    this.series.forEach((s,i) => this.chart.data.datasets[i].data.push({x: s.x.value, y: s.y.value}));
+    this.series.forEach((s,i) => {
+      let d = this.chart.data.datasets[i];
+      d.data.push({x: s.x.value, y: s.y.value});
+      if(d.lastOnly) {
+        let n = d.data.length;
+        if(n == 1) d.pointRadius = [d.pointRadius];
+        else {
+          d.pointRadius[n-1] = d.pointRadius[n-2];
+          d.pointRadius[n-2] = 0;
+        }
+      }
+    });
     if(withRefresh) this.chart.update();
   }
 
@@ -86,6 +97,7 @@ class _Chart {
       l.pointRadius = d.show ? d.size : 0;
       l.pointBackgroundColor = d.color;
       l.pointBorderColor = d.color;
+      l.lastOnly = d.lastonly; //*************
     });
   }
 }

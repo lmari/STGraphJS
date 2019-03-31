@@ -24,16 +24,24 @@ class _Table {
       style.innerHTML = s;
       document.body.appendChild(style);
     }
+    this.lastOnly = data.lastonly;
+    this.onlyLasts = this.lastOnly != undefined ? this.lastOnly.reduce((x,y) => x && y, true) : false;
     let row = this.domEl[0].insertRow(-1);
     this.series.forEach(x => { let cell = row.insertCell(-1); cell.innerHTML = x.name; })
     model.env._tables.push(this);
   }
 
   update() {
-    let row = this.domEl[0].insertRow(-1);
+    let row;
     let cell;
-    if(this.decimals) this.series.forEach((x,i) => { cell = row.insertCell(-1); cell.innerHTML = x.value.toFixed(this.decimals[i]); });
-    else this.series.forEach(x => { cell = row.insertCell(-1); cell.innerHTML = x.value; })
+    if(!this.onlyLasts || this.domEl[0].rows.length == 1) {
+      row = this.domEl[0].insertRow(-1);
+      this.series.forEach(x => row.insertCell(-1));
+    }
+    this.series.forEach((x,i) => {
+      cell = (this.lastOnly && this.lastOnly[i]) ? this.domEl[0].rows[1].cells[i] : row.cells[i];
+      cell.innerHTML = this.decimals ? x.value.toFixed(this.decimals[i]) : x.value;
+    });
   }
 }
 

@@ -20,8 +20,8 @@ $(document).ready(function() {
   for(let __x of _model_data.parameters) eval(`var ${__x.id} = new Parameter("${__x.id}", model, ${__x.val})`);
   for(let __x of _model_data.variables) eval(`var ${__x.id} = new Variable("${__x.id}", model, ${__x.out})`);
   for(let __x of _model_data.variables) {
-    if(__x.eta != undefined) eval(`${__x.id}.setAlgebraic(${__x.eta}, ${__x.args})`);
     if(__x.phi != undefined) eval(`${__x.id}.setState(${__x.phi}, ${__x.args}, ${__x.init})`);
+    if(__x.eta != undefined) eval(`${__x.id}.setAlgebraic(${__x.eta}, ${__x.args})`);
   }
 
   _env_data.charts.forEach(__x => new _Chart(model, __x, eval(__x.series)));

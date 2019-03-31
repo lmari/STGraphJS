@@ -10,12 +10,16 @@ _model_data = {
 
 _env_data = {
   simDelay: 10,
-  timed: true, trace: 3,
+  timed: true, trace: 0,
   title: "Capitale con interessi",
   charts: [
   ],
   tables: [
-    { title: "capitale", top: 50, left: 10, series: "[model.Time, capitale]", decimals: [0, 2], alignments: ['right', 'center'] },
-    { title: "interessi", top: 200, left: 300, series: "[model.Time, interessi]", decimals: [0, 3], alignments: ['left', 'right'] },
+    { title: "capitale", top: 50, left: 10,
+      series: "[model.Time, capitale]",
+      decimals: [0, 2], alignments: ['right', 'center'] },
+    { title: "interessi", top: 200, left: 300,
+      series: "[model.Time, interessi]",
+      decimals: [0, 3], alignments: ['left', 'right'], lastonly: [true, false] },
   ],
 };
