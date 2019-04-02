@@ -3,16 +3,17 @@
 var _time, _timeD, _this, _thread;
 
 class _Model {
-  constructor(env, time0=0, time1=10, timeD=1) {
+  constructor(env, data) {
     this.env = env;
     this.pars = [];
     this.vars = [];
     this.outvars = [];
-    this.time0 = time0;
-    this.time1 = time1;
-    this.timeD = timeD;
-    this.time = time0;
-    this.Time = new Parameter("Time", this, time0);
+    this.time0 = data.time0;
+    this.time1 = data.time1;
+    this.timeD = data.timeD;
+    this.time = data.time0;
+    this.Time = new Parameter("Time", this, data.time0);
+    this.execState = 0; // 0: ready; 1: executing; 2: paused
   }
 
   static list(arr) { return arr.map(x => x.name).join(', '); }
@@ -50,30 +51,77 @@ class _Model {
 
   isFirstStep() { return this.time == this.time0; }
 
-  eval() {
+  preExec(timed) {
     this.sortVars();
-    _Env.preEvalCallback(this);
     _timeD = this.timeD;
-    if(this.env.timed) {
-      this.time = this.time0;
-      let _model = this;
-      _thread = setInterval(function() { _model.evalHelper(); }, this.env.simulationDelay);
-    } else {
-      for(this.time = this.time0; this.time <= this.time1; this.time += this.timeD) this.evalHelper();
-    }
-    _Env.postEvalCallback(this);
+    this.initExec(timed);
   }
 
-  evalHelper() {
+  initExec(timed) {
+    _Env.preEvalCallback(this, timed);
+    this.time = this.time0;
+    this.execState = 0;
+  }
+
+  postExec(timed) {
+    _Env.postEvalCallback(this, timed);
+    this.execState = 0;
+  }
+
+  exec(timed) {
+    this.preExec(timed);
+    if(timed) {
+      let _model = this;
+      _thread = setInterval(function() { _model.evalHelper(timed, false); }, this.env.simulationDelay);
+    } else {
+      for(this.time = this.time0; this.time <= this.time1; this.time += this.timeD) this.evalHelper(timed, false);
+    }
+    this.postExec(timed);
+  }
+
+  steppedExec() {
+    if(this.execState == 0) this.initExec(false);
+    this.evalHelper(false, true);
+    this.execState = 2;
+  }
+
+  restartExec(timed) {
+    if(timed) {
+      let _model = this;
+      _thread = setInterval(function() { _model.evalHelper(timed, false); }, this.env.simulationDelay);
+    } else {
+      for(; this.time <= this.time1; this.time += this.timeD) this.evalHelper(timed, false);
+    }
+    this.postExec();
+  }
+
+  pauseExec() {
+    clearInterval(_thread);
+    this.execState = 2;
+  }
+
+  stopExec() {
+    clearInterval(_thread);
+    this.execState = 0;
+  }
+
+  evalHelper(timed, stepped) {
+    this.execState = 1;
     _time = this.Time.value = this.time;
-    _Env.inEvalCallback1(this);
+    _Env.inEvalCallback1(this, timed);
     this.vars.forEach(x => { if(x.isState() || x.isStateWithOut()) x.evalState(this.env.trace); });
     this.vars.forEach(x => x.evalEta(this.env.trace));
     this.vars.forEach(x => { if(x.isState() || x.isStateWithOut()) x.evalPhi(this.env.trace); });
-    _Env.inEvalCallback2(this);
-    if(this.env.timed) {
+    _Env.inEvalCallback2(this, timed||stepped);
+    if(timed) {
       this.time += this.timeD;
-      if(this.time > this.time1) clearInterval(_thread);
+      if(this.time > this.time1) {
+        clearInterval(_thread);
+        this.postExec(timed);
+      }
+    } else if(stepped) {
+      this.time += this.timeD;
+      if(this.time > this.time1) this.postExec(false);
     }
   }
 

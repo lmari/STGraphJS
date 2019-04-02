@@ -26,9 +26,18 @@ class _Table {
     }
     this.lastOnly = data.lastonly;
     this.onlyLasts = this.lastOnly != undefined ? this.lastOnly.reduce((x,y) => x && y, true) : false;
-    let row = this.domEl[0].insertRow(-1);
-    this.series.forEach(x => { let cell = row.insertCell(-1); cell.innerHTML = x.name; })
+    this.init();
     model.env._tables.push(this);
+  }
+
+  init() {
+    let row = this.domEl[0].insertRow(-1);
+    this.series.forEach(x => { let cell = row.insertCell(-1); cell.innerHTML = x.name; });
+  }
+
+  reset() {
+    this.domEl.html('');
+    this.init();
   }
 
   update() {

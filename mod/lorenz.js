@@ -10,17 +10,17 @@ _model_data = {
 
 _env_data = {
   simDelay: 1,
-  timed: false, trace: 0,
-  title: "Attrattore di Lorenz",
+  trace: 0,
+  title: "Lorenz attractor",
   charts: [
-    { title: "chart1", top: 50, left: 10,
+    { title: "X,Y projection", top: 100, left: 10,
       series: "[{x:x, y:y}]",
       lines: [{ show: true, color: 'red', width: 0.5 }] },
-    { title: "chart2", top: 350, left: 10,
+    { title: "X,Z projection", top: 400, left: 10,
       series: "[{x:x, y:z}]",
       lines: [{ show: false }],
       points: [{show: true, color: 'green', size: 0.5}] },
-    { title: "chart3", top: 650, left: 10,
+    { title: "Y,Z projection", top: 700, left: 10,
       series: "[{x:y, y:z}]" },
   ],
   tables: [

@@ -1,0 +1,19 @@
+#menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2000;
+}
+
+/* Make jQuery UI Menu into a horizontal menubar with vertical dropdown */
+#menubar > li { /* Menubar buttons */
+  display: inline-block;
+}
+#menubar > li > ul > li { /* Menubar buttons inside dropdown */
+  display: block;
+}
+
+#menubar > li > div > span.ui-icon-caret-1-e { /* Caret on menubar */
+  background:none no-repeat -64px -16px !important;
+}

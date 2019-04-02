@@ -17,20 +17,20 @@ _model_data = {
 };
 
 _env_data = {
-  simDelay: 10,
-  timed: true, trace: 0,
+  simDelay: 100,
+  trace: 0,
   title: "Prezzo, domanda, offerta",
   charts: [
-    { title: "chart1", top: 50, left: 10,
+    { title: "chart1", top: 120, left: 10,
       xaxis: { min: -0.5, max: 7.5, step: 1 },
       yaxis: { min: -0.5, max: 25.5, step: 2 },
       series: "[prezzo]",
       lines: [{ show: true, color: 'red', width: 1 }],
-      points: [{ show: true, color: 'green', size: 10, lastonly: true }] },
+      points: [{ show: true, color: 'green', size: 10, lastonly: false }] },
   ],
   tables: [
-    { title: "table1", top: 450, left: 10,
+    { title: "table1", top: 500, left: 10,
       series: "[model.Time, prezzo]",
-      decimals: [0, 2], alignments: ['center', 'right'], lastonly: [true, true] },
+      decimals: [0, 2], alignments: ['center', 'right'], lastonly: [false, false] },
   ],
 };
