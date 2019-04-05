@@ -15,11 +15,11 @@ _env_data = {
   charts: [
   ],
   tables: [
-    { title: "capitale", top: 50, left: 10,
-      series: "[model.Time, capitale]",
+    { title: "capitale", top: 70, left: 10,
+      series: "[Time, capitale]",
       decimals: [0, 2], alignments: ['right', 'center'] },
     { title: "interessi", top: 200, left: 300,
-      series: "[model.Time, interessi]",
+      series: "[Time, interessi]",
       decimals: [0, 3], alignments: ['left', 'right'], lastonly: [true, false] },
   ],
 };

@@ -1,7 +1,10 @@
 _model_data = {
   time0: 0, time1: 50, timeD: 0.03125,
-  parameters: [],
+  parameters: [
+  ],
   variables: [
+    { id: "t0", phi: "() => _this", args: "[]", init: "sysTime()" },
+    { id: "t1", out: true, eta: "x => sysTime()-x", args: "[t0]" },
     { id: "x", out: true, phi: "y => _this+(5*(y-_this))*_timeD", args: "[y]", init: "0" },
     { id: "y", out: true, phi: "(x,z) => _this+(-x*z+15*x-_this)*_timeD", args: "[x,z]", init: "1" },
     { id: "z", out: true, phi: "(x,y) => _this+(-1*_this+x*y)*_timeD", args: "[x,y]", init: "1" },
@@ -24,5 +27,8 @@ _env_data = {
       series: "[{x:y, y:z}]" },
   ],
   tables: [
+    { title: "time lap", top: 50, left: 10,
+      series: "[t1]",
+      decimals: [0], alignments: ['center'], lastonly: [true] }
   ],
 };

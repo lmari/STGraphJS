@@ -15,7 +15,7 @@ class _Table {
     container.append(`<table id='${domEl}' border='1'>`);
     this.domEl = $('#'+domEl);
     this.model = model;
-    this.series = series;
+    this.series = typeof series == 'string' ? eval(this.fixSeries(series)) : series;
     this.decimals = data.decimals;
     if(data.alignments) {
       let style = document.createElement('style');
@@ -28,6 +28,16 @@ class _Table {
     this.onlyLasts = this.lastOnly != undefined ? this.lastOnly.reduce((x,y) => x && y, true) : false;
     this.init();
     model.env._tables.push(this);
+  }
+
+  /** fixSeries - Add a leading 'model.' to each series, so to localize it to the current model.
+   * *** THIS ASSUMES THAT THE MODEL IS IN THE VARIABLE 'model':
+   * *** HENCE IT IS NOT THE MOST GENERAL SOLUTION!!!
+   * @param  {string} a string of the kind '[series,series2,...]'
+   * @return {string} a string of the kind '[model.series1,model.series2,...]' */
+  fixSeries(a) {
+    let s = a.trim().slice(1, -1).trim().split(',');
+    return '[' + s.map(i => 'model.' + i.trim()).join(',') + ']';
   }
 
   init() {

@@ -86,3 +86,5 @@ function rand(x,y) {
   if(y == null) return x*Math.random();
   return x+(y-x)*Math.random();
 }
+
+function sysTime() { return new Date().getTime(); }

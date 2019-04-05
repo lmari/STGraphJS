@@ -1,18 +1,17 @@
 'use strict';
 
-
 class _Env {
   constructor(data) {
+    this.data = data;
     this.trace = data.trace; // 0: no trace; 1: basic trace (simple log for outvars); 2: mid trace (simple log for all vars & table & chart for outvars); 3: deep trace (full log & table & chart for all vars)
     this.simulationDelay = data.simDelay;
-    this.title = data.title;
     this._charts = [];
     this._tables = [];
   }
 
   setPageTitle() {
     $('body').append('<h1 id="pageTitle" style="margin-top: 25px">');
-    $('#pageTitle').html(this.title);
+    $('#pageTitle').html(this.data.title);
   }
 
   setMenuBar() {
@@ -49,19 +48,24 @@ class _Env {
     });
   }
 
+  setWidgets(model) {
+    this.data.charts.forEach(__x => new _Chart(model, __x, __x.series));
+    this.data.tables.forEach(__x => new _Table(model, __x, __x.series));
+  }
+
   runKey() {
-    if(model.execState == 0 || model.execState == 3) model.exec(false);
-    else if(model.execState == 2) model.restartExec(false);
+    if(model.execState == ExecState.READY || model.execState == ExecState.EXECUTING) model.exec(false);
+    else if(model.execState == ExecState.PAUSED) model.restartExec(false);
   }
 
   timedRunKey() {
-    if(model.execState == 0 || model.execState == 3) model.exec(true);
-    else if(model.execState == 1) model.pauseExec();
-    else if(model.execState == 2) model.restartExec(true);
+    if(model.execState == ExecState.READY || model.execState == 3) model.exec(true);
+    else if(model.execState == ExecState.EXECUTING) model.pauseExec();
+    else if(model.execState == ExecState.PAUSED) model.restartExec(true);
   }
 
   steppedRunKey() {
-    if(model.execState == 1) model.pauseExec();
+    if(model.execState == ExecState.EXECUTING) model.pauseExec();
     else model.steppedExec();
   }
 
@@ -74,7 +78,10 @@ class _Env {
     //else if(model.env.trace == 3) $('#trace').append('<hr> ListVars> ' + _Model.list(model.vars) + '<hr>');
     model.env._charts.forEach(chart => chart.reset());
     model.env._tables.forEach(table => table.reset());
-    if(model.env.trace > 1) $('body').append('<div id="trace">');
+    if(model.env.trace > 1) {
+      if($('#trace').length == 0) $('body').append('<div id="trace">');
+      else $('#trace').html('');
+    }
     if(model.env.trace == 2) {
       new _Chart(model, '', model.outvars, 'trace');
       new _Table(model, '', [model.Time].concat(model.outvars), 'trace');
@@ -86,7 +93,7 @@ class _Env {
       let container = $('#trace');
       container.dialog({ autoOpen: true, width: 'auto' });
       container.dialog('option', 'title', 'Trace');
-      container.dialog({ position: { my: "left top", at: 'left top', of: window } });
+      container.dialog({ position: { my: "left top+70", at: 'left top', of: window } });
     }
   }
 

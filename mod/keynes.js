@@ -24,13 +24,13 @@ _env_data = {
     { title: "chart1", top: 120, left: 10,
       xaxis: { min: -0.5, max: 7.5, step: 1 },
       yaxis: { min: -0.5, max: 25.5, step: 2 },
-      series: "[prezzo]",
+      series: "[prezzo]", //model
       lines: [{ show: true, color: 'red', width: 1 }],
       points: [{ show: true, color: 'green', size: 10, lastonly: false }] },
   ],
   tables: [
     { title: "table1", top: 500, left: 10,
-      series: "[model.Time, prezzo]",
+      series: "[Time, prezzo]",
       decimals: [0, 2], alignments: ['center', 'right'], lastonly: [false, false] },
   ],
 };

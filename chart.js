@@ -19,7 +19,7 @@ class _Chart {
     this.domEl = $('#'+domEl);
     this.model = model;
     this.data = data;
-    this.series = series.map(s => s.x == undefined ? {x:this.model.Time, y:s} : s);
+    this.series = (typeof series == 'string') ? eval(this.fixSeries(series)) : this.fixSeries0(series, model);
     var datasets = new Array();
     for(let i = 0; i < series.length; i++) datasets[i] = this.initDataset(this.data);
     this.chart = new Chart(domEl, {
@@ -37,6 +37,26 @@ class _Chart {
     if(data.lines != undefined) this.setLines(data.lines);
     if(data.points != undefined) this.setPoints(data.points);
     model.env._charts.push(this);
+  }
+
+  fixSeries0(a, model) {
+    return a.map(s => s.x == undefined ? {x:model.Time, y:s} : s);
+  }
+
+  /** fixSeries - Add a leading 'model.' to each series, so to localize it to the current model.
+   * *** THIS ASSUMES THAT THE MODEL IS IN THE VARIABLE 'model':
+   * *** HENCE IT IS NOT THE MOST GENERAL SOLUTION!!!
+   * @param  {string} a string of the kind '[series,{x:series2,y:series3},...]'
+   * @return {string} a string of the kind '[{x:model.Time,y:model.series1},{x:model.series2,y:model.series3},...]' */
+  fixSeries(a) {
+    let s = a.trim().slice(1, -1).trim().split(',');
+    let r = '';
+    s.forEach(t => {
+      if(t.slice(0,1) == '{') r += '{x:model.' + t.split(':')[1] + ',';
+      else if(t.slice(-1) == '}') r += 'y:model.' + t.split(':')[1] + ',';
+      else r += '{x:model.Time,y:model.' + t + '},';
+    });
+    return '[' + r + ']';
   }
 
   initDataset() {

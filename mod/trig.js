@@ -12,7 +12,7 @@ _env_data = {
   trace: 0,
   title: "Trig",
   charts: [
-    { title: "chart1", top: 50, left: 10,
+    { title: "chart1", top: 70, left: 10,
       xaxis: { min: -1.5, max: 10.5, step: 1 },
       yaxis: { min: -1.5, max: 1.5, step: 0.5 },
       series: "[{ x: cosx, y: sinx }, cosx, sinx ]",
@@ -21,7 +21,7 @@ _env_data = {
   ],
   tables: [
     { title: "table1", top: 450, left: 10,
-      series: "[model.Time, cosx, sinx]",
+      series: "[Time, cosx, sinx]",
       decimals: [0, 2, 2], alignments: ['right', 'right', 'right'], lastonly: [true, true, true] },
   ],
 };
