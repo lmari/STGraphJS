@@ -19,9 +19,7 @@ class _Model {
     this.timeD = data.timeD;
     this.time = data.time0;
     this.Time = new Parameter("Time", this, data.time0);
-    //for(let __x of data.parameters) eval(`this.${__x.id} = new Parameter("${__x.id}", this, ${__x.val})`);
     data.parameters.forEach(x => eval(`this.${x.id} = new Parameter("${x.id}", this, ${x.val})`));
-    //for(let __x of data.variables) eval(`this.${__x.id} = new Variable("${__x.id}", this, ${__x.out})`);
     data.variables.forEach(x => eval(`this.${x.id} = new Variable("${x.id}", this, ${x.out})`));
     for(let __x of data.variables) {
       let args = this.fixArgs(__x.args);
@@ -213,23 +211,23 @@ class Variable extends X {
 
   setAlgebraic(eta, etaArgs) {
     this.type = VarType.ALGEBRAIC;
-    this.eta = eta;
+    this.eta = new _SP(eta).fix();
     this.etaArgs = etaArgs;
   }
 
   setState(phi, phiArgs, initState) {
     this.type = VarType.STATE;
-    this.phi = phi;
+    this.phi = new _SP(phi).fix();
     this.phiArgs = phiArgs;
     this.initState = initState;
   }
 
   setStateWithOut(phi, phiArgs, initState, eta, etaArgs) {
     this.type = VarType.STATEWITHOUTPUT;
-    this.phi = phi;
+    this.phi = new _SP(phi).fix();
     this.phiArgs = phiArgs;
     this.initState = initState;
-    this.eta = eta;
+    this.eta = new _SP(eta).fix();
     this.etaArgs = etaArgs;
   }
 
@@ -263,6 +261,8 @@ class Variable extends X {
     this.nextState = this.phi(...this.phiArgs.map(x => x instanceof X ? x.value : x));
     if(trace == 3) console.log(this.name + ' [evalPhi (nextState)]: ' + this.nextState);
   }
+
+  isScalar() { return $.isNumeric(this.value); }
 
   show() { return this.name + ':' + this.value; }
 }

@@ -1,7 +1,7 @@
 // Type helpers
-function isNumber(x) { return typeof x == "number"; }
-function isArray(x) { return Array.isArray(x); }
-function isFunction(x) { return typeof x == "function"; }
+var isNumber = x => typeof x == "number";
+var isArray = x => Array.isArray(x);
+var isFunction = x => typeof x == "function";
 
 // Helper for making monadic functions polymorphic
 function funHelper1(f,x) {
@@ -13,8 +13,8 @@ function funHelper1(f,x) {
 // Helper for making dyadic functions polymorphic
 function funHelper2(f,x,y) {
   if(isNumber(x) && isNumber(y)) return f(x,y);
-  if(isArray(x) && isNumber(y)) { return x.map(x1 => f(x1,y)); }
-  if(isNumber(x) && isArray(y)) { return y.map(y1 => f(x,y1)); }
+  if(isArray(x) && isNumber(y)) return x.map(x1 => f(x1,y));
+  if(isNumber(x) && isArray(y)) return y.map(y1 => f(x,y1));
   if(isArray(x) && isArray(y)) {
     if(x.length == y.length) return x.map((x1,i) => f(x1,y[i]));
     if(x.length < y.length) return x.concat(Array(y.length-x.length).fill(0)).map((x1,i) => f(x1,y[i]));
@@ -73,10 +73,6 @@ function abs(x) { return funHelper1(Math.abs,x); }
 function sin(x) { return funHelper1(Math.sin,x); }
 function cos(x) { return funHelper1(Math.cos,x); }
 function int(x) { return funHelper1(parseInt,x); }
-function plus(x,y) { return funHelper2((x,y)=>x+y,x,y); }
-function minus(x,y) { return funHelper2((x,y)=>x-y,x,y); }
-function times(x,y) { return funHelper2((x,y)=>x*y,x,y); }
-function divided(x,y) { return funHelper2((x,y)=>x/y,x,y); }
 function round(x,y) { return funHelper2((x,y)=>1*x.toFixed(y),x,y); }
 function max(x,y) { return funHelper2(Math.max,x,y); }
 function min(x,y) { return funHelper2(Math.min,x,y); }
@@ -88,3 +84,24 @@ function rand(x,y) {
 }
 
 function sysTime() { return new Date().getTime(); }
+
+// Functions corresponding to prefix operators
+function __pluspre(x) { return funHelper1(x=>+x,x); } // +x
+function __minuspre(x) { return funHelper1(x=>-x,x); } // -x
+function __not(x) { return funHelper1(x=>!x,x); } // !x
+
+// Functions corresponding to infix operators
+function __plus(x,y) { return funHelper2((x,y)=>x+y,x,y); } // x+y
+function __minus(x,y) { return funHelper2((x,y)=>x-y,x,y); } // x-y
+function __times(x,y) { return funHelper2((x,y)=>x*y,x,y); } // x*y
+function __divided(x,y) { return funHelper2((x,y)=>x/y,x,y); } // x/y
+function __mod(x,y) { return funHelper2((x,y)=>x%y,x,y); } // x%y
+function __power(x,y) { return funHelper2((x,y)=>x**y,x,y); } // x**y and x^y
+function __less(x,y) { return funHelper2((x,y)=>x<y,x,y); } // x<y
+function __lesseq(x,y) { return funHelper2((x,y)=>x<=y,x,y); } // x<y
+function __equal(x,y) { return funHelper2((x,y)=>x==y,x,y); } // x==y
+function __notequ(x,y) { return funHelper2((x,y)=>x!=y,x,y); } // x!=y
+function __greatereq(x,y) { return funHelper2((x,y)=>x>=y,x,y); } // x>=y
+function __greater(x,y) { return funHelper2((x,y)=>x>y,x,y); } // x>y
+function __and(x,y) { return funHelper2((x,y)=>x&&y,x,y); } // x&&y
+function __or(x,y) { return funHelper2((x,y)=>x||y,x,y); } // x||y
