@@ -1,10 +1,37 @@
 'use strict';
 
+let _fileLoader = document.createElement('INPUT');
+_fileLoader.setAttribute('type', 'file');
+_fileLoader.addEventListener('change', getFile);
+
+function getFile() {
+  if(_fileLoader.files.length == 0) return null;
+  let reader = new FileReader();
+  reader.onload = function(event) {
+    let contents = event.target.result;
+    eval(contents);
+    env = new _Env(_env_data);
+    env.setPageTitle();
+    env.setMenuBar();
+    model = new _Model(env, _model_data);
+    env.setWidgets(model);
+  };
+  reader.readAsText(_fileLoader.files[0]);
+}
+
 class _Env {
   constructor(data) {
     this.data = data;
     this.trace = data.trace; // 0: no trace; 1: basic trace (simple log for outvars); 2: mid trace (simple log for all vars & table & chart for outvars); 3: deep trace (full log & table & chart for all vars)
     this.simulationDelay = data.simDelay;
+    if(_Table.count > 0) {
+      for(let i=0; i<_Table.count; i++) $('#_DivTable_' + i).remove();
+      _Table.count = 0;
+    }
+    if(_Chart.count > 0) {
+      for(let i=0; i<_Chart.count; i++) $('#_DivChart_' + i).remove();
+      _Chart.count = 0;
+    }
     this._charts = [];
     this._tables = [];
   }
@@ -15,8 +42,13 @@ class _Env {
   }
 
   setMenuBar() {
+    if($('#menubar').html()) {
+      $('#menubar').remove();
+      $('body').unbind('keydown');
+    }
     $('body').append(`
     <div id="menubar" style="background-color:lightgray">
+    <li onclick="_fileLoader.click()"><div>Load [L]</div></li>
     <li><div>Exec</div><ul>
       <li onclick="env.runKey()"><div>[1] Run</div></li>
       <li onclick="env.timedRunKey()"><div>[2] Timed run</div></li>
@@ -35,6 +67,7 @@ class _Env {
       else if(k == 2) env.timedRunKey();
       else if(k == 3) env.steppedRunKey();
       else if(k == 4) env.stopKey();
+      else if(k == 28) _fileLoader.click();
     });
   }
 

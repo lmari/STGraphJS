@@ -117,7 +117,7 @@ class _Model {
   steppedExec() {
     if(this.execState == ExecState.READY) this.initExec(false);
     this.evalHelper(false, true);
-    this.execState = ExecState.PAUSED;
+    if(this.time <= this.time1) this.execState = ExecState.PAUSED;
   }
 
   restartExec(timed) {
