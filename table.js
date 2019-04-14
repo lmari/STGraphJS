@@ -8,9 +8,10 @@ class _Table {
       $('body').append(`<div id='${this.container}'>`)
     }
     let container = $('#'+this.container);
-    container.dialog({ autoOpen: true, width: 'auto' });
-    container.dialog('option', 'title', data.title);
+    container.dialog({ autoOpen: true, width: !data.width ? 'auto' : data.width });
+    container.dialog({ height: !data.height ? 'auto' : data.height });
     container.dialog({ position: { my: "left top", at: `left+${data.left} top+${data.top}`, of: window } });
+    container.dialog('option', 'title', data.title);
     let domEl = '_Table_' + _Table.count++;
     container.append(`<table id='${domEl}' border='1'>`);
     this.domEl = $('#'+domEl);
@@ -27,6 +28,8 @@ class _Table {
     this.lastOnly = data.lastonly;
     this.onlyLasts = this.lastOnly != undefined ? this.lastOnly.reduce((x,y) => x && y, true) : false;
     this.init();
+    let c = `$('#${this.container}').dialog('open')`;
+    $('#widgetmenu').append(`<li onclick="${c}"><div>table: ${data.title}</div></li>`);
     model.env._tables.push(this);
   }
 

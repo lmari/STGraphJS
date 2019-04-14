@@ -211,23 +211,23 @@ class Variable extends X {
 
   setAlgebraic(eta, etaArgs) {
     this.type = VarType.ALGEBRAIC;
-    this.eta = new _SP(eta).fix();
+    this.eta = _SP.fix(eta);
     this.etaArgs = etaArgs;
   }
 
   setState(phi, phiArgs, initState) {
     this.type = VarType.STATE;
-    this.phi = new _SP(phi).fix();
+    this.phi = _SP.fix(phi);
     this.phiArgs = phiArgs;
     this.initState = initState;
   }
 
   setStateWithOut(phi, phiArgs, initState, eta, etaArgs) {
     this.type = VarType.STATEWITHOUTPUT;
-    this.phi = new _SP(phi).fix();
+    this.phi = _SP.fix(phi);
     this.phiArgs = phiArgs;
     this.initState = initState;
-    this.eta = new _SP(eta).fix();
+    this.eta = _SP.fix(eta);
     this.etaArgs = etaArgs;
   }
 

@@ -16,27 +16,17 @@ class _Env {
 
   setMenuBar() {
     $('body').append(`
-    <div id="menubar">
+    <div id="menubar" style="background-color:lightgray">
     <li><div>Exec</div><ul>
       <li onclick="env.runKey()"><div>[1] Run</div></li>
       <li onclick="env.timedRunKey()"><div>[2] Timed run</div></li>
       <li onclick="env.steppedRunKey()"><div>[3] Stepped run</div></li>
       <li onclick="env.stopKey()"><div>[4] Stop</div></li>
     </ul></li>
+    <li><div>Widgets</div><ul id="widgetmenu">
+    </ul></li>
     </div>
     `);
-
-    $('#menubar').menu({
-      position: { my: 'left top', at: 'left bottom' },
-      blur: function() {
-        $(this).menu('option', 'position', { my: 'left top', at: 'left bottom' });
-      },
-      focus: function(e, ui) {
-        if ($('#menubar').get(0) !== $(ui).get(0).item.parent().get(0)) {
-          $(this).menu('option', 'position', { my: 'left top', at: 'right top' });
-        }
-      },
-    });
 
     let env = this;
     $('body').keydown(function(event) {
@@ -48,9 +38,24 @@ class _Env {
     });
   }
 
+  fixMenuBar() { // must be run after having added all menuitems: currently called by setWidgets()
+    $('#menubar').menu({
+      position: { my: 'left top', at: 'left bottom' },
+      blur: function() {
+        $(this).menu('option', 'position', { my: 'left top', at: 'left bottom' });
+      },
+      focus: function(e, ui) {
+        if ($('#menubar').get(0) !== $(ui).get(0).item.parent().get(0)) {
+          $(this).menu('option', 'position', { my: 'left top', at: 'right top' });
+        }
+      },
+    });
+  }
+
   setWidgets(model) {
     this.data.charts.forEach(__x => new _Chart(model, __x, __x.series));
     this.data.tables.forEach(__x => new _Table(model, __x, __x.series));
+    this.fixMenuBar();
   }
 
   runKey() {

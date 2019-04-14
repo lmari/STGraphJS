@@ -21,7 +21,7 @@ _env_data = {
   trace: 0,
   title: "Prezzo, domanda, offerta",
   charts: [
-    { title: "chart1", top: 120, left: 10,
+    { title: "chart1", top: 120, left: 10, width: 400,
       xaxis: { min: -0.5, max: 7.5, step: 1 },
       yaxis: { min: -0.5, max: 25.5, step: 2 },
       series: "[prezzo]", //model
@@ -29,7 +29,7 @@ _env_data = {
       points: [{ show: true, color: 'green', size: 10, lastonly: false }] },
   ],
   tables: [
-    { title: "table1", top: 500, left: 10,
+    { title: "table1", top: 500, left: 10, width: "auto", height: 200,
       series: "[Time, prezzo]",
       decimals: [0, 2], alignments: ['center', 'right'], lastonly: [false, false] },
   ],

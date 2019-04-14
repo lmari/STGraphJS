@@ -6,13 +6,8 @@ function Token(type, value) {
 }
 
 class _SP {
-	constructor(lambda) {
-		this.arg = lambda.toString().split("=>")[0].trim();
-		this.fun = lambda.toString().split("=>")[1].trim();
-		this.tokens = [];
-	}
-
-	makeFun() { return eval(`${this.arg} => ${this.tokens.map(token => token.value).join('')}`); }
+	static getFun(lambda) { return lambda.toString().split("=>").map(x => x.trim()); }
+	static makeFun(arg, tokens) { return eval(`${arg} => ${tokens.map(token => token.value).join('')}`); }
 
 	static isDot(ch) { return ch == '.'; } static isComma(ch) { return ch == ','; }
 	static isLeftPar(ch) { return ch == '('; } static isRightPar(ch) { return ch == ')'; }
@@ -56,11 +51,11 @@ class _SP {
 		{from:'||', to:'__or', prec:6}
 	]; }
 
-	tokenize() {
-		let str = this.fun;
+	static tokenize(fun) {
+		let str = fun;
 		str.replace(/\s+/g, "");
 		str = str.split("");
-		let result = [];
+		let tokens = [];
 		let stringBuffer = [];
 		let numberBuffer = [];
 	  let nDots = 0;
@@ -73,8 +68,8 @@ class _SP {
 	        stringBuffer.push(char);
 	        char = str[++i];
 	      }
-	      if(_SP.isLeftPar(char)) result.push(new Token(_SP.fun(), stringBuffer.join('')));
-	      else result.push(new Token(_SP.var(), stringBuffer.join('')));
+	      if(_SP.isLeftPar(char)) tokens.push(new Token(_SP.fun(), stringBuffer.join('')));
+	      else tokens.push(new Token(_SP.var(), stringBuffer.join('')));
 	      stringBuffer = [];
 				continue;
 	    }
@@ -84,7 +79,7 @@ class _SP {
 	        if(_SP.isDot(char)) nDots++;
 	        char = str[++i];
 	      }
-	      if(nDots < 2) result.push(new Token(_SP.num(), numberBuffer.join('')));
+	      if(nDots < 2) tokens.push(new Token(_SP.num(), numberBuffer.join('')));
 	      else return "ERR: tokenizer-e1";
 	      numberBuffer = [];
 	      nDots = 0;
@@ -92,17 +87,17 @@ class _SP {
 			}
 			if(i < str.length-1) {
 				char2 = char + str[i+1];
-				if(_SP.is2Operator(char2)) { result.push(new Token(_SP.ope(), char2)); i += 2; continue; }
+				if(_SP.is2Operator(char2)) { tokens.push(new Token(_SP.ope(), char2)); i += 2; continue; }
 			}
-			if(_SP.isLeftPar(char)) { result.push(new Token(_SP.lpa(), char)); i++; continue; }
-	    if(_SP.isRightPar(char)) { result.push(new Token(_SP.rpa(), char)); i++; continue; }
-			if(_SP.isLeftSqu(char)) { result.push(new Token(_SP.lsq(), char)); i++; continue; }
-			if(_SP.isRightSqu(char)) { result.push(new Token(_SP.rsq(), char)); i++; continue; }
-	    if(_SP.isComma(char)) { result.push(new Token(_SP.com(), char)); i++; continue; }
-			if(_SP.isOperator(char)) { result.push(new Token(_SP.ope(), char)); i++; continue; }
-			return; // an error...
+			if(_SP.isLeftPar(char)) { tokens.push(new Token(_SP.lpa(), char)); i++; continue; }
+	    if(_SP.isRightPar(char)) { tokens.push(new Token(_SP.rpa(), char)); i++; continue; }
+			if(_SP.isLeftSqu(char)) { tokens.push(new Token(_SP.lsq(), char)); i++; continue; }
+			if(_SP.isRightSqu(char)) { tokens.push(new Token(_SP.rsq(), char)); i++; continue; }
+	    if(_SP.isComma(char)) { tokens.push(new Token(_SP.com(), char)); i++; continue; }
+			if(_SP.isOperator(char)) { tokens.push(new Token(_SP.ope(), char)); i++; continue; }
+			return "ERR: tokenizer-e2"; // an error...
 	  }
-		this.tokens = result;
+		return tokens;
 	}
 
 	static inRange(t, p) { return (p >= 0) && (p < t.length); }
@@ -120,7 +115,7 @@ class _SP {
 		let n = 0; // number of nested parentheses
 		let x;
 		p += d;
-		while(this.inRange(t,p)) {
+		while(_SP.inRange(t,p)) {
 			x = t[p].type;
 			if(x == s2) {
 				if(n == 0) return p; // found
@@ -177,9 +172,9 @@ class _SP {
 		return null;
 	}
 
-	fixPrefixOperators() {
-		let t = this.tokens;
-		let n = this.tokens.length-1;
+	static fixPrefixOperators(tokens) {
+		let t = tokens;
+		let n = tokens.length-1;
 		let leftOp, rightOp;
 		for(let p=n; p>=0; p--) {
 			if(t[p].type == _SP.ope()) {
@@ -192,11 +187,11 @@ class _SP {
 				}
 			}
 		}
-		this.tokens = t;
+		return t;
 	}
 
-	prefixInfixOperator(p) { // index of operator in the vector of tokens
-		let t = this.tokens;
+	static prefixInfixOperator(tokens, p) { // index of operator in the vector of tokens
+		let t = tokens;
 		let rightOp = _SP.getRightOperand(t,p);
 		if(rightOp == null) return null; // postfix operators not allowed
 		let leftOp = _SP.getLeftOperand(t,p);
@@ -205,22 +200,25 @@ class _SP {
 		t.splice(leftOp[0]+1, 0, new Token(_SP.lpa(), '('));
 		t[leftOp[1]+3] = new Token(_SP.com(), ',');
 		t.splice(rightOp[1]+3, 0, new Token(_SP.rpa(), ')'));
-		this.tokens = t;
+		return t;
 	}
 
 	static findInOperator(t, prec) { return t.findIndex(el => (el.type == _SP.ope()
 		&& _SP.substTableInfix().find(entry => el.value == entry.from && entry.prec == prec))); }
 
-	transform() {
-		this.fixPrefixOperators();
+	static transform(tokens) {
+		let t = _SP.fixPrefixOperators(tokens);
 		let p;
-		for(let i=1; i<7; i++) while((p = _SP.findInOperator(this.tokens, i)) != -1) this.prefixInfixOperator(p, i);
+		for(let i=1; i<7; i++) while((p = _SP.findInOperator(t, i)) != -1) t = _SP.prefixInfixOperator(t, p);
+		return t;
 	}
 
-	fix() {
-		this.tokenize();
-		this.transform();
-		return this.makeFun();
+	static fix(lambda) {
+		let arg, fun;
+		[arg, fun] = _SP.getFun(lambda);
+		let tokens = _SP.tokenize(fun);
+		tokens = _SP.transform(tokens);
+		return _SP.makeFun(arg, tokens);
 	}
 
 }
