@@ -14,11 +14,13 @@ class _SP {
 	static isLeftSqu(ch) { return ch == '['; } static isRightSqu(ch) { return ch == ']'; }
 	static isDigit(ch) { return /\d/.test(ch); }
 	static isLetter(ch) { return /[a-z]|_/i.test(ch); }
+	static isQuote(ch) { return ch == '\'' || ch == '\"'; }
 	static is2Operator(ch) { return /<=|==|!=|>=|&&|\|\||\*\*/.test(ch); }
 	static isOperator(ch) { return /!|<|>|\+|-|\*|\/|%|\^/.test(ch); }
 
 	static var() { return 'var' }; static isVar(t, p) { return t[p].type == _SP.var(); }
 	static num() { return 'num' }; static isNum(t, p) { return t[p].type == _SP.num(); }
+	static str() { return 'str' }; static isStr(t, p) { return t[p].type == _SP.str(); }
 	static fun() { return 'fun' }; static isFun(t, p) { return t[p].type == _SP.fun(); }
 	static ope() { return 'ope' }; static isOpe(t, p) { return t[p].type == _SP.ope(); }
 	static lpa() { return 'lpa' }; static isLpa(t, p) { return t[p].type == _SP.lpa(); }
@@ -85,6 +87,21 @@ class _SP {
 	      nDots = 0;
 				continue;
 			}
+			if(_SP.isQuote(char)) {
+				stringBuffer.push(char);
+				char = str[++i];
+				while(i < str.length && !_SP.isQuote(char)) {
+	        stringBuffer.push(char);
+	        char = str[++i];
+	      }
+				if(_SP.isQuote(char)) {
+					stringBuffer.push(char);
+	        char = str[++i];
+					tokens.push(new Token(_SP.str(), stringBuffer.join('')));
+				} else return "ERR: tokenizer-e2";
+	      stringBuffer = [];
+				continue;
+	    }
 			if(i < str.length-1) {
 				char2 = char + str[i+1];
 				if(_SP.is2Operator(char2)) { tokens.push(new Token(_SP.ope(), char2)); i += 2; continue; }
@@ -95,7 +112,7 @@ class _SP {
 			if(_SP.isRightSqu(char)) { tokens.push(new Token(_SP.rsq(), char)); i++; continue; }
 	    if(_SP.isComma(char)) { tokens.push(new Token(_SP.com(), char)); i++; continue; }
 			if(_SP.isOperator(char)) { tokens.push(new Token(_SP.ope(), char)); i++; continue; }
-			return "ERR: tokenizer-e2"; // an error...
+			return "ERR: tokenizer-e3"; // an error...
 	  }
 		return tokens;
 	}

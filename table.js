@@ -1,19 +1,17 @@
 'use strict';
 
-class _Table {
+class _Table extends _Widget {
   constructor(model, data, series, containerId) {
+    super();
+    this.kind = 'Table';
     if(containerId) this.container = containerId;
     else {
       this.container = '_DivTable_' + _Table.count;
-      $('body').append(`<div id='${this.container}'>`)
+      $('body').append(`<div id='${this.container}'>`);
     }
-    let container = $('#'+this.container);
-    container.dialog({ autoOpen: true, width: !data.width ? 'auto' : data.width });
-    container.dialog({ height: !data.height ? 'auto' : data.height });
-    container.dialog({ position: { my: "left top", at: `left+${data.left} top+${data.top}`, of: window } });
-    container.dialog('option', 'title', data.title);
+    this.setContainer(this, data);
     let domEl = '_Table_' + _Table.count++;
-    container.append(`<table id='${domEl}' border='1'>`);
+    $('#'+this.container).append(`<table id='${domEl}' border='1'>`);
     this.domEl = $('#'+domEl);
     this.model = model;
     this.series = typeof series == 'string' ? eval(this.fixSeries(series)) : series;
@@ -28,8 +26,7 @@ class _Table {
     this.lastOnly = data.lastonly;
     this.onlyLasts = this.lastOnly != undefined ? this.lastOnly.reduce((x,y) => x && y, true) : false;
     this.init();
-    let c = `$('#${this.container}').dialog('open')`;
-    $('#widgetmenu').append(`<li onclick="${c}"><div>table: ${data.title}</div></li>`);
+    this.setMenuItem(this, data);
     model.env._tables.push(this);
   }
 

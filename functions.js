@@ -105,3 +105,5 @@ function __greatereq(x,y) { return funHelper2((x,y)=>x>=y,x,y); } // x>=y
 function __greater(x,y) { return funHelper2((x,y)=>x>y,x,y); } // x>y
 function __and(x,y) { return funHelper2((x,y)=>x&&y,x,y); } // x&&y
 function __or(x,y) { return funHelper2((x,y)=>x||y,x,y); } // x||y
+
+function getFromWidget(widget) { return env._inputWidgets[widget].getValue(); }

@@ -16,18 +16,18 @@ _env_data = {
   trace: 0,
   title: "Lorenz attractor",
   charts: [
-    { title: "X,Y projection", top: 100, left: 10,
+    { title: "X,Y projection", top: 100, left: 10, width: 400,
       series: "[{x:x, y:y}]",
       lines: [{ show: true, color: 'red', width: 0.5 }] },
-    { title: "X,Z projection", top: 400, left: 10,
+    { title: "X,Z projection", top: 350, left: 10, width: 400,
       series: "[{x:x, y:z}]",
       lines: [{ show: false }],
       points: [{show: true, color: 'green', size: 0.5}] },
-    { title: "Y,Z projection", top: 700, left: 10,
+    { title: "Y,Z projection", top: 600, left: 10, width: 400,
       series: "[{x:y, y:z}]" },
   ],
   tables: [
-    { title: "time lap", top: 50, left: 10,
+    { title: "time lapse", top: 30, left: 300, height: 120,
       series: "[t1]",
       decimals: [0], alignments: ['center'], lastonly: [true] }
   ],

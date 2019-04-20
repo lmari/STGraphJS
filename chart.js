@@ -1,23 +1,21 @@
 'use strict';
 
-class _Chart {
+class _Chart extends _Widget {
   constructor(model, data, series, containerId) {
+    super();
+    this.kind = 'Chart';
     if(containerId) { this.container = containerId; }
     else {
       this.container = '_DivChart_' + _Chart.count;
       $('body').append(`<div id='${this.container}'>`)
     }
-    let w = !data.width ? 600 : data.width;
-    let h = !data.height ? 380 : data.height;
-    let container = $('#'+this.container);
-    container.dialog({ autoOpen: true, width: w+40 });
-    container.dialog({ position: { my: "left top", at: `left+${data.left} top+${data.top}`, of: window } });
-    container.dialog('option', 'title', data.title);
+    data.width = !data.width ? 640 : data.width;
+    this.setContainer(this, data);
     let domEl = '_Chart_' + _Chart.count++;
-    let s = `<div style="position:relative; top:2px; left:2px; width:${w}px;">`;
+    let s = `<div style="position:relative; top:2px; left:2px; width:${data.width-40}px;">`;
     s += `<canvas id="${domEl}" style="border:2px solid #FF9933;"></canvas>`;
     s += '</div>';
-    container.append(s);
+    $('#'+this.container).append(s);
     this.domEl = $('#'+domEl);
     this.model = model;
     this.data = data;
@@ -38,8 +36,7 @@ class _Chart {
     if(data.yaxis != undefined) this.setAxis('y', data.yaxis);
     if(data.lines != undefined) this.setLines(data.lines);
     if(data.points != undefined) this.setPoints(data.points);
-    let c = `$('#${this.container}').dialog('open')`;
-    $('#widgetmenu').append(`<li onclick="${c}"><div>chart: ${data.title}</div></li>`);
+    this.setMenuItem(this, data);
     model.env._charts.push(this);
   }
 
@@ -101,9 +98,9 @@ class _Chart {
   setLines(data) {
     data.forEach((d,i) => {
       let l = this.chart.data.datasets[i];
-      l.showLine = d.show;
-      l.borderColor = d.color;
-      l.borderWidth = d.width;
+      l.showLine = d.show ? d.show : true;
+      l.borderColor = d.color ? d.color : 'black';
+      l.borderWidth = d.width ? d.width : 0.5;
     });
   }
 

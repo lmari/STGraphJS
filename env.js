@@ -24,6 +24,10 @@ class _Env {
     this.data = data;
     this.trace = data.trace; // 0: no trace; 1: basic trace (simple log for outvars); 2: mid trace (simple log for all vars & table & chart for outvars); 3: deep trace (full log & table & chart for all vars)
     this.simulationDelay = data.simDelay;
+    this.resetWidgets();
+  }
+
+  resetWidgets() {
     if(_Table.count > 0) {
       for(let i=0; i<_Table.count; i++) $('#_DivTable_' + i).remove();
       _Table.count = 0;
@@ -32,8 +36,19 @@ class _Env {
       for(let i=0; i<_Chart.count; i++) $('#_DivChart_' + i).remove();
       _Chart.count = 0;
     }
-    this._charts = [];
+    if(_Button.count > 0) {
+      for(let i=0; i<_Button.count; i++) $('#_DivButton_' + i).remove();
+      _Button.count = 0;
+    }
+    if(_Slider.count > 0) {
+      for(let i=0; i<_Slider.count; i++) $('#_DivSlider_' + i).remove();
+      _Slider.count = 0;
+    }
     this._tables = [];
+    this._charts = [];
+    this._buttons = [];
+    this._sliders = [];
+    this._inputWidgets = {};
   }
 
   setPageTitle() {
@@ -86,8 +101,10 @@ class _Env {
   }
 
   setWidgets(model) {
-    this.data.charts.forEach(__x => new _Chart(model, __x, __x.series));
-    this.data.tables.forEach(__x => new _Table(model, __x, __x.series));
+    if(this.data.charts) this.data.charts.forEach(__x => new _Chart(model, __x, __x.series));
+    if(this.data.tables) this.data.tables.forEach(__x => new _Table(model, __x, __x.series));
+    if(this.data.buttons) this.data.buttons.forEach(__x => new _Button(model, __x));
+    if(this.data.sliders) this.data.sliders.forEach(__x => new _Slider(model, __x));
     this.fixMenuBar();
   }
 
