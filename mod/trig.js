@@ -27,7 +27,7 @@ _env_data = {
   ],
   buttons: [
     { title: "button1", top: 450, left: 200, height: 100,
-      label: "click me", tooltip: "this is an example" },
+      labelOn: "On", labelOff: "Off", tooltip: "this is an example" },
   ],
   sliders: [
     { title: "slider1", top: 450, left: 350, height: 100,

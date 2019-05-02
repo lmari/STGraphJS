@@ -1,9 +1,8 @@
 'use strict';
 
-class _Slider extends _Widget {
+class _Slider extends _InputWidget {
   constructor(model, data) {
     super();
-    this.kind = 'Slider';
     this.container = '_DivSlider_' + _Slider.count;
     $('body').append(`<div id='${this.container}'>`);
     this.setContainer(this, data);
@@ -33,4 +32,5 @@ class _Slider extends _Widget {
 
 }
 
+_Slider.kind = 'Slider';
 _Slider.count = 0;

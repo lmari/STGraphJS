@@ -7,7 +7,7 @@ _fileLoader.addEventListener('change', getFile);
 function getFile() {
   if(_fileLoader.files.length == 0) return null;
   let reader = new FileReader();
-  reader.onload = function(event) {
+  reader.onload = event => {
     let contents = event.target.result;
     eval(contents);
     env = new _Env(_env_data);
@@ -19,6 +19,9 @@ function getFile() {
   reader.readAsText(_fileLoader.files[0]);
 }
 
+/**
+ * Default browser environment for executing models and dealing with widgets.
+ */
 class _Env {
   constructor(data) {
     this.data = data;
@@ -28,26 +31,10 @@ class _Env {
   }
 
   resetWidgets() {
-    if(_Table.count > 0) {
-      for(let i=0; i<_Table.count; i++) $('#_DivTable_' + i).remove();
-      _Table.count = 0;
-    }
-    if(_Chart.count > 0) {
-      for(let i=0; i<_Chart.count; i++) $('#_DivChart_' + i).remove();
-      _Chart.count = 0;
-    }
-    if(_Button.count > 0) {
-      for(let i=0; i<_Button.count; i++) $('#_DivButton_' + i).remove();
-      _Button.count = 0;
-    }
-    if(_Slider.count > 0) {
-      for(let i=0; i<_Slider.count; i++) $('#_DivSlider_' + i).remove();
-      _Slider.count = 0;
-    }
-    this._tables = [];
-    this._charts = [];
-    this._buttons = [];
-    this._sliders = [];
+    _Widget.reset(_Table); this._tables = [];
+    _Widget.reset(_Chart); this._charts = [];
+    _Widget.reset(_Button); this._buttons = [];
+    _Widget.reset(_Slider); this._sliders = [];
     this._inputWidgets = {};
   }
 

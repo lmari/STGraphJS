@@ -3,7 +3,6 @@
 class _Table extends _Widget {
   constructor(model, data, series, containerId) {
     super();
-    this.kind = 'Table';
     if(containerId) this.container = containerId;
     else {
       this.container = '_DivTable_' + _Table.count;
@@ -64,4 +63,5 @@ class _Table extends _Widget {
   }
 }
 
+_Table.kind = 'Table';
 _Table.count = 0;

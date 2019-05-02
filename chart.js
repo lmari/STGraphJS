@@ -3,7 +3,6 @@
 class _Chart extends _Widget {
   constructor(model, data, series, containerId) {
     super();
-    this.kind = 'Chart';
     if(containerId) { this.container = containerId; }
     else {
       this.container = '_DivChart_' + _Chart.count;
@@ -131,4 +130,5 @@ class _Chart extends _Widget {
   }
 }
 
+_Chart.kind = 'Chart';
 _Chart.count = 0;
