@@ -3,11 +3,14 @@ var isNumber = x => typeof x == "number";
 var isArray = x => Array.isArray(x);
 var isFunction = x => typeof x == "function";
 
-// Helper for making monadic functions polymorphic
+/** funHelper1 - Helper for making monadic functions polymorphic.
+ * @param  {Function} f function to be made polymorphic
+ * @param  {any} x argument of the function
+ * @return {Function} polymorphic function */
 function funHelper1(f,x) {
   if(isNumber(x)) return f(x);
   if(isArray(x)) { return x.map(x1 => f(x1)); }
-  return 'funHelper1-e1';
+  throw '[model.js]funHelper1(): ERROR_1.';
 }
 
 // Helper for making dyadic functions polymorphic
@@ -20,7 +23,7 @@ function funHelper2(f,x,y) {
     if(x.length < y.length) return x.concat(Array(y.length-x.length).fill(0)).map((x1,i) => f(x1,y[i]));
     return y.concat(Array(x.length-y.length).fill(0)).map((y1,i) => f(x[i],y1));
   }
-  return 'funHelper2-e1';
+  throw '[model.js]funHelper2(): ERROR_1.';
 }
 
 // Meta-functions for creating polymorphic monadic or dyadic functions
@@ -83,7 +86,12 @@ function rand(x,y) {
   return x+(y-x)*Math.random();
 }
 
+function pi() { return Math.PI; }
+
 function sysTime() { return new Date().getTime(); }
+
+// 2d vector obtained projecting the 3d vector x by means of the angular coefficients in the 2d vector y
+function map3dto2d(x,y) { return [x[0]-x[2]*Math.sin(y[0]),x[1]-x[2]*Math.sin(y[1])]; }
 
 // Functions corresponding to prefix operators
 function __pluspre(x) { return funHelper1(x=>+x,x); } // +x

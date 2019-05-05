@@ -1,6 +1,7 @@
 'use strict';
 
 class _Chart extends _Widget {
+
   constructor(model, data, series, containerId) {
     super();
     if(containerId) { this.container = containerId; }

@@ -8,7 +8,9 @@ const ExecState = {
   PAUSED: 2
 };
 
+/** Core class dealing with a model. */
 class _Model {
+
   constructor(env, data) {
     this.env = env;
     this.pars = [];
@@ -19,7 +21,7 @@ class _Model {
     this.timeD = data.timeD;
     this.time = data.time0;
     this.Time = new Parameter("Time", this, data.time0);
-    data.parameters.forEach(x => eval(`this.${x.id} = new Parameter("${x.id}", this, ${x.val})`));
+    data.parameters.forEach(x => eval(`this.${x.id} = new Parameter("${x.id}", this, ${_Model.isArray(x.val) ? "[" + x.val + "]" : x.val})`));
     data.variables.forEach(x => eval(`this.${x.id} = new Variable("${x.id}", this, ${x.out})`));
     for(let __x of data.variables) {
       let args = this.fixArgs(__x.args);
@@ -33,22 +35,35 @@ class _Model {
     this.execState = ExecState.READY;
   }
 
+  static isNumber(x) { return typeof x == "number" };
+  static isArray(x) { return Array.isArray(x); }
+  static isFunction(x) { return typeof x == "function"; }
+
+  static isNumberStr(x) { return $.isNumeric(x); }
+  static isVariableStr(x) { return _SP.isLetter(x.slice(0,1)) && x.slice(-1) != ')'; }
+  static isFunctionStr(x) { return _SP.isLetter(x.slice(0,1)) && (x.slice(-1) == ')'); }
+  static isArrayStr(x) { return x.slice(0,1) == '['; }
+
   /** fixArgs - Add a leading 'this.' to each argument, so to localize it to the current model.
-   * @param  {string} a string of the kind '[arg1,arg2,...]'
-   * @return {string} a string of the kind '[this.arg1,this.arg2,...]' */
+   * @param  {string} a string of the kind '[arg_1,arg_2,...], where each arg_i' is the id of a variable: numbers and functions are not allowed here
+   * @return {string} a string of the kind '[this.arg_1,this.arg_2,...]' */
   fixArgs(a) {
     let s = a.trim().slice(1, -1).trim();
     return (s.length == 0) ? '[]' : '[' + s.split(',').map(i => 'this.' + i).join(',') + ']';
   }
 
   /** fixInit - Add a leading 'this.' to init if required, so to localize it to the current model.
-   * @param  {string} a string of the kind 'number' or 'function()' or 'variable'
-   * @return {string} a string of the kind 'number' or 'function()' or 'this.variable' */
+   * @param  {string} a string of the kind 'number' or 'function()' or 'variable', or an array of them
+   * @return {string} a string of the kind 'number' or 'function()' or 'this.variable', or an array of them */
   fixInit(a) {
     let s = a.trim();
-    if($.isNumeric(s)) return s;
-    if(s.slice(-1) == ')') return s;
-    return 'this.' + s;
+    if(_Model.isNumberStr(s) || _Model.isFunctionStr(s)) return s;
+    if(_Model.isVariableStr(s)) return 'this.' + s;
+    if(_Model.isArrayStr(s)) {
+      s = s.slice(1, -1).trim();
+      return '[' + s.split(',').map(i => _Model.isVariable(i) ? 'this.' + i : i).join(',') + ']';
+    }
+    throw '_Model.fixInit(): ERROR_1.';
   }
 
   static list(arr) { return arr.map(x => x.name).join(', '); }
@@ -173,30 +188,35 @@ const VarType = {
   STATEWITHOUTPUT: 3
 };
 
-class X {}
+class X {
 
-
-class Parameter extends X {
   constructor(name, model, value) {
-    super();
     this.name = name;
     this.model = model;
     this.value = value;
-    model.pars.push(this);
   }
+
+  isScalar() { return $.isNumeric(this.value); }
 
   show() { return this.name + ':' + this.value; }
 }
 
 
+class Parameter extends X {
+
+  constructor(name, model, value) {
+    super(name, model, value);
+    model.pars.push(this);
+  }
+}
+
+
 class Variable extends X {
+
   constructor(name, model, isOutput=false) {
-    super();
-    this.name = name;
-    this.model = model;
+    super(name, model, 0);
     this.isOutput = isOutput;
     this.type = 0;
-    this.value = 0;
     this.state = 0;
     this.initState = 0;
     this.initStateAsString = '';
@@ -261,8 +281,4 @@ class Variable extends X {
     this.nextState = this.phi(...this.phiArgs.map(x => x instanceof X ? x.value : x));
     if(trace == 3) console.log(this.name + ' [evalPhi (nextState)]: ' + this.nextState);
   }
-
-  isScalar() { return $.isNumeric(this.value); }
-
-  show() { return this.name + ':' + this.value; }
 }

@@ -82,7 +82,7 @@ class _SP {
 	        char = str[++i];
 	      }
 	      if(nDots < 2) tokens.push(new Token(_SP.num(), numberBuffer.join('')));
-	      else return "ERR: tokenizer-e1";
+	      else throw "_SP.tokenizer(): ERROR_1";
 	      numberBuffer = [];
 	      nDots = 0;
 				continue;
@@ -98,7 +98,7 @@ class _SP {
 					stringBuffer.push(char);
 	        char = str[++i];
 					tokens.push(new Token(_SP.str(), stringBuffer.join('')));
-				} else return "ERR: tokenizer-e2";
+				} else throw "_SP.tokenizer(): ERROR_2";
 	      stringBuffer = [];
 				continue;
 	    }
@@ -112,7 +112,7 @@ class _SP {
 			if(_SP.isRightSqu(char)) { tokens.push(new Token(_SP.rsq(), char)); i++; continue; }
 	    if(_SP.isComma(char)) { tokens.push(new Token(_SP.com(), char)); i++; continue; }
 			if(_SP.isOperator(char)) { tokens.push(new Token(_SP.ope(), char)); i++; continue; }
-			return "ERR: tokenizer-e3"; // an error...
+			throw "_SP.tokenizer(): ERROR_3";
 	  }
 		return tokens;
 	}

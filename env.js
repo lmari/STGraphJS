@@ -19,10 +19,9 @@ function getFile() {
   reader.readAsText(_fileLoader.files[0]);
 }
 
-/**
- * Default browser environment for executing models and dealing with widgets.
- */
+/** Default browser environment for executing models and dealing with widgets. */
 class _Env {
+
   constructor(data) {
     this.data = data;
     this.trace = data.trace; // 0: no trace; 1: basic trace (simple log for outvars); 2: mid trace (simple log for all vars & table & chart for outvars); 3: deep trace (full log & table & chart for all vars)
@@ -115,7 +114,10 @@ class _Env {
     model.stopExec();
   }
 
-  static preEvalCallback(model, interactive) { // default callback: before starting evaluation
+  /** @static preEvalCallback - Default callback: before starting evaluation
+   * @param  {type} model       description
+   * @param  {type} interactive description */
+  static preEvalCallback(model, interactive) {
     //if(model.env.trace == 2) $('#trace').append('<hr> ListOutVars> ' + _Model.list(model.outvars) + '<hr>');
     //else if(model.env.trace == 3) $('#trace').append('<hr> ListVars> ' + _Model.list(model.vars) + '<hr>');
     model.env._charts.forEach(chart => chart.reset());
@@ -125,10 +127,10 @@ class _Env {
       else $('#trace').html('');
     }
     if(model.env.trace == 2) {
-      new _Chart(model, '', model.outvars, 'trace');
+      new _Chart(model, {title: 'trace'}, model.outvars, 'trace');
       new _Table(model, '', [model.Time].concat(model.outvars), 'trace');
     } else if(model.env.trace == 3) {
-      new _Chart(model, '', model.vars, 'trace');
+      new _Chart(model, {title: 'trace'}, model.vars, 'trace');
       new _Table(model, '', [model.Time].concat(model.vars), 'trace');
     }
     if(model.env.trace > 1) {
@@ -139,7 +141,10 @@ class _Env {
     }
   }
 
-  static inEvalCallback1(model, interactive) { // default callback: before each evaluation step
+  /** @static inEvalCallback1 - Default callback: before each evaluation step.
+   * @param  {_Model} model
+   * @param  {Boolean} interactive */
+  static inEvalCallback1(model, interactive) {
     if(model.env.trace > 0) console.log('\n*** time step:' + _time);
   }
 

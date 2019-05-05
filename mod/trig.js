@@ -1,15 +1,16 @@
 _model_data = {
-  time0: 0, time1: 10, timeD: 0.1,
+  time0: 0, time1: 10, timeD: 0.01,
   parameters: [
   ],
   variables: [
-    { id: "cosx", eta: "() => cos(_time)", args: "[]" },
-    { id: "sinx", eta: "() => sin(_time)*getFromWidget('slider1')", args: "[]" },
+    { id: "x", eta: "() => [cos(_time),sin(_time)*getFromWidget('slider1')]", args: "[]" },
+    { id: "cosx", eta: "x => x[0]", args: "[x]" },
+    { id: "sinx", eta: "x => x[1]", args: "[x]" },
     { id: "clicked", eta: "() => getFromWidget('button1')", args: "[]" }]
 };
 
 _env_data = {
-  simDelay: 100,
+  simDelay: 1,
   trace: 0,
   title: "Trig",
   charts: [
