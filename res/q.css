@@ -6,14 +6,28 @@
   z-index: 2000;
 }
 
-/* Make jQuery UI Menu into a horizontal menubar with vertical dropdown */
-#menubar > li { /* Menubar buttons */
+/* make jQuery UI Menu into a horizontal menubar with vertical dropdown */
+#menubar > li { /* menubar buttons */
   display: inline-block;
 }
-#menubar > li > ul > li { /* Menubar buttons inside dropdown */
+#menubar > li > ul > li { /* menubar buttons inside dropdown */
   display: block;
 }
 
-#menubar > li > div > span.ui-icon-caret-1-e { /* Caret on menubar */
+#menubar > li > div > span.ui-icon-caret-1-e { /* caret on menubar */
   background:none no-repeat -64px -16px !important;
+}
+
+.ui-progressbar {
+  position: relative;
+  width: 200pt;
+  height: 10pt;
+}
+
+.progress-label {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #fff;
 }

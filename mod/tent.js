@@ -10,7 +10,7 @@ _model_data = {
 };
 
 _env_data = {
-  simDelay: 100,
+  simDelay: 10,
   trace: 0,
   title: "Tent map",
   charts: [

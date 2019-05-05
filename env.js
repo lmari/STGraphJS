@@ -19,6 +19,8 @@ function getFile() {
   reader.readAsText(_fileLoader.files[0]);
 }
 
+let _barEnd, _barDelta;
+
 /** Default browser environment for executing models and dealing with widgets. */
 class _Env {
 
@@ -49,15 +51,16 @@ class _Env {
     }
     $('body').append(`
     <div id="menubar" style="background-color:lightgray">
-    <li onclick="_fileLoader.click()"><div>Load [L]</div></li>
-    <li><div>Exec</div><ul>
-      <li onclick="env.runKey()"><div>[1] Run</div></li>
-      <li onclick="env.timedRunKey()"><div>[2] Timed run</div></li>
-      <li onclick="env.steppedRunKey()"><div>[3] Stepped run</div></li>
-      <li onclick="env.stopKey()"><div>[4] Stop</div></li>
-    </ul></li>
-    <li><div>Widgets</div><ul id="widgetmenu">
-    </ul></li>
+      <li onclick="_fileLoader.click()"><div>Load [L]</div></li>
+      <li><div>Exec</div><ul>
+        <li onclick="env.runKey()"><div>[1] Run</div></li>
+        <li onclick="env.timedRunKey()"><div>[2] Timed run</div></li>
+        <li onclick="env.steppedRunKey()"><div>[3] Stepped run</div></li>
+        <li onclick="env.stopKey()"><div>[4] Stop</div></li>
+      </ul></li>
+      <li><div>Widgets</div><ul id="widgetmenu">
+      </ul></li>
+      <li><div id="progressbar"><div class="progress-label">_</div></div></li>
     </div>
     `);
 
@@ -69,6 +72,14 @@ class _Env {
       else if(k == 3) env.steppedRunKey();
       else if(k == 4) env.stopKey();
       else if(k == 28) _fileLoader.click();
+    });
+
+    let bar = $('#progressbar');
+    let lab = $('.progress-label');
+    bar.progressbar({
+      value: 0,
+      change: function() { lab.text(bar.progressbar('value')); },
+      complete: function() { lab.text(''); }
     });
   }
 
@@ -84,6 +95,9 @@ class _Env {
         }
       },
     });
+
+     _barEnd = (model.time1+model.timeD-model.time0)/model.timeD;
+     _barDelta = model.timeD;
   }
 
   setWidgets(model) {
@@ -122,6 +136,8 @@ class _Env {
     //else if(model.env.trace == 3) $('#trace').append('<hr> ListVars> ' + _Model.list(model.vars) + '<hr>');
     model.env._charts.forEach(chart => chart.reset());
     model.env._tables.forEach(table => table.reset());
+    $('#progressbar').progressbar('value', 0);
+    $('#progressbar').progressbar('option', 'max', _barEnd);
     if(model.env.trace > 1) {
       if($('#trace').length == 0) $('body').append('<div id="trace">');
       else $('#trace').html('');
@@ -151,6 +167,11 @@ class _Env {
   static inEvalCallback2(model, interactive) { // default callback: after each evaluation step
     model.env._charts.forEach(chart => chart.update(interactive));
     model.env._tables.forEach(table => table.update());
+    if(interactive) {
+      let bar = $('#progressbar');
+      let val = bar.progressbar('value');
+      bar.progressbar('value', val+_barDelta);
+    }
   }
 
   static postEvalCallback(model, interactive) { // default callback: after completing evaluation
