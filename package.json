@@ -1,4 +1,7 @@
 {
   "name": "STGraphJS",
-  "main": "q.html"
-} 
+  "main": "q.html",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}

@@ -141,8 +141,8 @@ class _Model {
       _thread = setInterval(function() { _model.evalHelper(timed, false); }, this.env.simulationDelay);
     } else {
       for(; this.time <= this.time1; this.time += this.timeD) this.evalHelper(timed, false);
+      this.postExec();
     }
-    this.postExec();
   }
 
   pauseExec() {

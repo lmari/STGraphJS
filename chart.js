@@ -7,13 +7,14 @@ class _Chart extends _Widget {
     if(containerId) { this.container = containerId; }
     else {
       this.container = '_DivChart_' + _Chart.count;
-      $('body').append(`<div id='${this.container}'>`)
+      $('body').append(`<div id='${this.container}'>`);
     }
     data.width = !data.width ? 640 : data.width;
+    data.height = !data.height ? 480 : data.height;
     this.setContainer(this, data);
     let domEl = '_Chart_' + _Chart.count++;
-    let s = `<div style="position:relative; top:2px; left:2px; width:${data.width-40}px;">`;
-    s += `<canvas id="${domEl}" style="border:2px solid #FF9933;"></canvas>`;
+    let s = `<div style="position:relative; top:2px; left:2px;">`;
+    s += `<canvas id="${domEl}" style="border:2px solid #FF9933; width:${data.width}px; height:${data.height-50}px;"></canvas>`;
     s += '</div>';
     $('#'+this.container).append(s);
     this.domEl = $('#'+domEl);

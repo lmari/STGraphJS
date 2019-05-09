@@ -19,7 +19,7 @@ function getFile() {
   reader.readAsText(_fileLoader.files[0]);
 }
 
-let _barEnd, _barDelta;
+let _barEnd;
 
 /** Default browser environment for executing models and dealing with widgets. */
 class _Env {
@@ -74,12 +74,11 @@ class _Env {
       else if(k == 28) _fileLoader.click();
     });
 
-    let bar = $('#progressbar');
-    let lab = $('.progress-label');
-    bar.progressbar({
-      value: 0,
-      change: function() { lab.text(bar.progressbar('value')); },
-      complete: function() { lab.text(''); }
+    $('#progressbar').progressbar({
+      change: function() {
+        let v = $('#progressbar').progressbar('value');
+        $('.progress-label').text(v == 0 ? '' : v+'/'+_barEnd);
+      }
     });
   }
 
@@ -95,9 +94,6 @@ class _Env {
         }
       },
     });
-
-     _barEnd = (model.time1+model.timeD-model.time0)/model.timeD;
-     _barDelta = model.timeD;
   }
 
   setWidgets(model) {
@@ -136,7 +132,8 @@ class _Env {
     //else if(model.env.trace == 3) $('#trace').append('<hr> ListVars> ' + _Model.list(model.vars) + '<hr>');
     model.env._charts.forEach(chart => chart.reset());
     model.env._tables.forEach(table => table.reset());
-    $('#progressbar').progressbar('value', 0);
+    _barEnd = (model.time1+model.timeD-model.time0)/model.timeD;
+    $('#progressbar').progressbar('value', '0');
     $('#progressbar').progressbar('option', 'max', _barEnd);
     if(model.env.trace > 1) {
       if($('#trace').length == 0) $('body').append('<div id="trace">');
@@ -168,14 +165,13 @@ class _Env {
     model.env._charts.forEach(chart => chart.update(interactive));
     model.env._tables.forEach(table => table.update());
     if(interactive) {
-      let bar = $('#progressbar');
-      let val = bar.progressbar('value');
-      bar.progressbar('value', val+_barDelta);
+      $('#progressbar').progressbar('value', $('#progressbar').progressbar('value')+1);
     }
   }
 
   static postEvalCallback(model, interactive) { // default callback: after completing evaluation
     if(!interactive) model.env._charts.forEach(chart => chart.update(true));
+    $('#progressbar').progressbar('value', '0');
   }
 
 }

@@ -4,8 +4,8 @@ _model_data = {
     { id: "c0", val: 1 },
     { id: "k", val: 0.1 }],
   variables: [
-    { id: "interessi", eta: "(k,capitale) => k*capitale", args: "[k,capitale]" },
-    { id: "capitale", out: true, phi: "interessi => _this+interessi*_this*_timeD", args: "[interessi]", init: "c0" }]
+    { id: "interessi", eta: (k,capitale) => k*capitale, args: "[k,capitale]" },
+    { id: "capitale", out: true, phi: interessi => _this+interessi*_this*_timeD, args: "[interessi]", init: "c0" }]
 };
 
 _env_data = {

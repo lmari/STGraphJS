@@ -8,12 +8,12 @@ _model_data = {
     { id: "d", val: 0.5 },
     { id: "f", val: 0.5 }],
   variables: [
-    { id: "domanda", eta: "(x,y,z) => x+y*z", args: "[a,prezzo,b]" },
-    { id: "domandaPrec", phi: "x => x", args: "[domanda]", init: "a" },
-    { id: "offerta", eta: "(x,y,z) => x+y*z", args: "[c,d,prezzoPrec]" },
-    { id: "diffDomOff", eta: "(x,y) => x-y", args: "[domandaPrec,offerta]" },
-    { id: "prezzo", out: true, eta: "(x,y) => x*y", args: "[f,diffDomOff]" },
-    { id: "prezzoPrec", phi: "x => x", args: "[prezzo]", init: "p0" }]
+    { id: "domanda", eta: (x,y,z) => x+y*z, args: "[a,prezzo,b]" },
+    { id: "domandaPrec", phi: x => x, args: "[domanda]", init: "a" },
+    { id: "offerta", eta: (x,y,z) => x+y*z, args: "[c,d,prezzoPrec]" },
+    { id: "diffDomOff", eta: (x,y) => x-y, args: "[domandaPrec,offerta]" },
+    { id: "prezzo", out: true, eta: (x,y) => x*y, args: "[f,diffDomOff]" },
+    { id: "prezzoPrec", phi: x => x, args: "[prezzo]", init: "p0" }]
 };
 
 _env_data = {

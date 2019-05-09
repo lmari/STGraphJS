@@ -5,15 +5,16 @@ class _Widget {
 
   setContainer(widget, data) {
     let container = $('#'+widget.container);
-    container.dialog({ autoOpen: true, width: !data.width ? 'auto' : data.width });
-    container.dialog({ height: !data.height ? 'auto' : data.height });
-    container.dialog({ position: { my: "left top", at: `left+${data.left} top+${data.top}`, of: window } });
+    container.dialog({ autoOpen: true, autoResize: true,
+      width: !data.width ? 'auto' : data.width,
+      height: !data.height ? 'auto' : data.height,
+      position: { my: "left top", at: `left+${data.left} top+${data.top}`, of: window } });
     container.dialog('option', 'title', data.title);
-    $('div.ui-dialog-titlebar').css({'font-size': '0.75em', 'height': '0.9em'});
+    $('div.ui-dialog-titlebar').css({'font-size': '0.8em', 'height': '1em'});
   }
 
   setMenuItem(widget, data) {
-    let c = `$('#${widget.container}').dialog('open')`;
+    let c = `$('#${widget.container}').dialog('isOpen') ? $('#${widget.container}').dialog('close') : $('#${widget.container}').dialog('open');`;
     $('#widgetmenu').append(`<li onclick="${c}"><div>${widget.constructor.kind}: ${data.title}</div></li>`);
   }
 
