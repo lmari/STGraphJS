@@ -24,9 +24,10 @@ let _barEnd;
 /** Default browser environment for executing models and dealing with widgets. */
 class _Env {
 
+  /** Constructor
+   * @param {object} data, as in the _env_data variable of a model file */
   constructor(data) {
     this.data = data;
-    this.trace = data.trace; // 0: no trace; 1: basic trace (simple log for outvars); 2: mid trace (simple log for all vars & table & chart for outvars); 3: deep trace (full log & table & chart for all vars)
     this.simulationDelay = data.simDelay;
     this.resetWidgets();
   }
@@ -82,7 +83,8 @@ class _Env {
     });
   }
 
-  fixMenuBar() { // must be run after having added all menuitems: currently called by setWidgets()
+  /** Menubar finalization: to be run after having added all menuitems: currently called by setWidgets(). */
+  fixMenuBar() {
     $('#menubar').menu({
       position: { my: 'left top', at: 'left bottom' },
       blur: function() {
@@ -128,40 +130,24 @@ class _Env {
    * @param  {type} model       description
    * @param  {type} interactive description */
   static preEvalCallback(model, interactive) {
-    //if(model.env.trace == 2) $('#trace').append('<hr> ListOutVars> ' + _Model.list(model.outvars) + '<hr>');
-    //else if(model.env.trace == 3) $('#trace').append('<hr> ListVars> ' + _Model.list(model.vars) + '<hr>');
     model.env._charts.forEach(chart => chart.reset());
     model.env._tables.forEach(table => table.reset());
-    _barEnd = (model.time1+model.timeD-model.time0)/model.timeD;
+    _barEnd = Math.round((model.time1+model.timeD-model.time0)/model.timeD);
     $('#progressbar').progressbar('value', '0');
     $('#progressbar').progressbar('option', 'max', _barEnd);
-    if(model.env.trace > 1) {
-      if($('#trace').length == 0) $('body').append('<div id="trace">');
-      else $('#trace').html('');
-    }
-    if(model.env.trace == 2) {
-      new _Chart(model, {title: 'trace'}, model.outvars, 'trace');
-      new _Table(model, '', [model.Time].concat(model.outvars), 'trace');
-    } else if(model.env.trace == 3) {
-      new _Chart(model, {title: 'trace'}, model.vars, 'trace');
-      new _Table(model, '', [model.Time].concat(model.vars), 'trace');
-    }
-    if(model.env.trace > 1) {
-      let container = $('#trace');
-      container.dialog({ autoOpen: true, width: 'auto' });
-      container.dialog('option', 'title', 'Trace');
-      container.dialog({ position: { my: "left top+70", at: 'left top', of: window } });
-    }
   }
 
   /** @static inEvalCallback1 - Default callback: before each evaluation step.
    * @param  {_Model} model
    * @param  {Boolean} interactive */
   static inEvalCallback1(model, interactive) {
-    if(model.env.trace > 0) console.log('\n*** time step:' + _time);
+    if(trace>1) console.log('\n*** time step: ' + _time);
   }
 
-  static inEvalCallback2(model, interactive) { // default callback: after each evaluation step
+  /** @static inEvalCallback2 - Default callback: after each evaluation step.
+   * @param {_Model} model
+   * @param {Boolean} interactive */
+  static inEvalCallback2(model, interactive) {
     model.env._charts.forEach(chart => chart.update(interactive));
     model.env._tables.forEach(table => table.update());
     if(interactive) {
@@ -169,7 +155,10 @@ class _Env {
     }
   }
 
-  static postEvalCallback(model, interactive) { // default callback: after completing evaluation
+  /** @static postEvalCallback - Default callback: after completing evaluation.
+   * @param {_Model} model
+   * @param {Boolean} interactive */
+  static postEvalCallback(model, interactive) {
     if(!interactive) model.env._charts.forEach(chart => chart.update(true));
     $('#progressbar').progressbar('value', '0');
   }

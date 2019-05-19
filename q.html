@@ -5,32 +5,23 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <link rel='stylesheet' href='res/jquery-ui.min.css' type='text/css'>
 <link rel='stylesheet' href='res/q.css' type='text/css'>
-<script src='res/jquery.min.js' type='text/javascript'></script>
-<script src='res/jquery-ui.min.js' type='text/javascript'></script>
-<script src='res/Chart.bundle.min.js' type='text/javascript'></script>
-<script src='./env.js' type='text/javascript'></script>
-<script src='./model.js' type='text/javascript'></script>
-<script src='./parser.js' type='text/javascript'></script>
-<script src='./functions.js' type='text/javascript'></script>
-<script src='./widget.js' type='text/javascript'></script>
-<script src='./chart.js' type='text/javascript'></script>
-<script src='./table.js' type='text/javascript'></script>
-<script src='./button.js' type='text/javascript'></script>
-<script src='./slider.js' type='text/javascript'></script>
-
-<script src='./mod/lorenz.js' type='text/javascript'></script>
+<script src='./loader.js'></script>
 <script>
 'use strict';
 let env, model;
+let trace = 1; // 0: no trace; 1: only initialization; 2: also values; 3: also next states
 
-$(document).ready(function() {
-  env = new _Env(_env_data);
-  env.setPageTitle();
-  env.setMenuBar();
-  model = new _Model(env, _model_data);
-  env.setWidgets(model);
-  model.exec(false);
-});
+Promise.all(loadScripts()).then(
+  script => {
+    env = new _Env(_env_data);
+    env.setPageTitle();
+    env.setMenuBar();
+    model = new _Model(env, _model_data);
+    env.setWidgets(model);
+    model.exec(false);
+  },
+  error => alert(`Error: ${error.message}`)
+);
 </script>
 </head>
 <body>

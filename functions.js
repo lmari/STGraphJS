@@ -30,29 +30,39 @@ function funHelper2(f,x,y) {
 function newFunction1(f) { return x => funHelper1(f,x); }
 function newFunction2(f) { return (x,y) => funHelper2(f,x,y); }
 
-// Reduce meta-function
+// Map higher-order function
+function map(f,a) { return a.map(x => f(x)); }
+
+// Reduce higher-order function
 function reduce(f,a) { return a.reduce((x,i) => f(x,i)); }
+
+// Scan higher-order function
+function scan(f,a) { return a.map((v,i,b) => b.slice(0,i+1).reduce(f)); }
+
+// Pairscan higher-order function
+function pairscan(f,a) { return a.map((v,i,b) => i==0 ? b[0] : f(b[i-1],b[i])); }
+
 
 // Sequence generator
 function seq(x,y,z) {
-  if(!isNumber(x)) return 'ERR: seq-e1';
+  if(!isNumber(x)) throw '[model.js]seq(): ERROR_1.';
   if(y == null) {
-    x = parseInt(x);
-  	if(x <= 0) return 'ERR: seq-e2';
+    x = Math.round(x);
+  	if(x <= 0) throw '[model.js]seq(): ERROR_2.';
     return Array.from(Array(x).keys());
   }
-  if(!isNumber(y)) return 'ERR: seq-e3';
+  if(!isNumber(y)) throw '[model.js]seq(): ERROR_3.';
   if(z == null) {
-  	x = parseInt(x);
-    y = parseInt(y);
-  	if(y <= x) return 'ERR: seq-e4';
+  	x = Math.round(x);
+    y = Math.round(y);
+  	if(y <= x) throw '[model.js]seq(): ERROR_4.';
     let res = [];
     for(let i=x; i<y; i++) res.push(i);
     return res;
   }
-  if(!isNumber(z)) return 'ERR: seq-e5';
-  if(z == 0 || x == y) return 'ERR: seq-e6';
-  if((z > 0 && x > y) || (z < 0 && x<y)) return 'ERR: seq-e7';
+  if(!isNumber(z)) throw '[model.js]seq(): ERROR_5.';
+  if(z == 0 || x == y) throw '[model.js]seq(): ERROR_6.';
+  if((z > 0 && x > y) || (z < 0 && x<y)) throw '[model.js]seq(): ERROR_7.';
   let res = [];
   if(z > 0) {
     while(x < y) { res.push(x); x+=z; }
@@ -67,7 +77,7 @@ function array(x,f) {
   let res = [];
   if(isNumber(f)) for(let i=0; i<x; i++) res.push(f);
   else if(isFunction(f)) for(let i=0; i<x; i++) res.push(f());
-  else return 'ERR: array-e1';
+  else throw '[model.js]array(): ERROR_1.';
   return res;
 }
 
@@ -75,7 +85,7 @@ function array(x,f) {
 function abs(x) { return funHelper1(Math.abs,x); }
 function sin(x) { return funHelper1(Math.sin,x); }
 function cos(x) { return funHelper1(Math.cos,x); }
-function int(x) { return funHelper1(parseInt,x); }
+function int(x) { return funHelper1(Math.round,x); }
 function round(x,y) { return funHelper2((x,y)=>1*x.toFixed(y),x,y); }
 function max(x,y) { return funHelper2(Math.max,x,y); }
 function min(x,y) { return funHelper2(Math.min,x,y); }
@@ -89,6 +99,12 @@ function rand(x,y) {
 function pi() { return Math.PI; }
 
 function sysTime() { return new Date().getTime(); }
+
+function conc(...x) { // x#y
+  let res = [];
+  x.forEach(i => res = res.concat(isNumber(i) ? [i] : i));
+  return res;
+}
 
 // 2d vector obtained projecting the 3d vector x by means of the angular coefficients in the 2d vector y
 function map3dto2d(x,y) { return [x[0]-x[2]*Math.sin(y[0]),x[1]-x[2]*Math.sin(y[1])]; }

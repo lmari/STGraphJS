@@ -34,8 +34,8 @@ _env_data = {
       series: "[{x:y, y:z}]" },
     { title: "X,Y,Z orbit", top: 200, left: 400, width: 600, height:500,
       series: "[{x:xx, y:yy}]",
-      lines: [{ show: false }],
-      points: [{show: true, color: 'blue', size: 0.5}] },
+      lines: [{ show: true, color: 'blue' }],
+      points: [{show: false}] },
   ],
   tables: [
     { title: "time lapse", top: 30, left: 450, height: 120,

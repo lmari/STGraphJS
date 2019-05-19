@@ -48,15 +48,17 @@ class _Chart extends _Widget {
   /** fixSeries - Add a leading 'model.' to each series, so to localize it to the current model.
    * *** THIS ASSUMES THAT THE MODEL IS IN THE VARIABLE 'model':
    * *** HENCE IT IS NOT THE MOST GENERAL SOLUTION!!!
-   * @param  {string} a string of the kind '[series,{x:series2,y:series3},...]'
+   * @param  {string} a string of the kind '[series1,{x:series2,y:series3},...]'
    * @return {string} a string of the kind '[{x:model.Time,y:model.series1},{x:model.series2,y:model.series3},...]' */
   fixSeries(a) {
     let s = a.trim().slice(1, -1).trim().split(',');
     let r = '';
     s.forEach(t => {
-      if(t.slice(0,1) == '{') r += '{x:model.' + t.split(':')[1] + ',';
-      else if(t.slice(-1) == '}') r += 'y:model.' + t.split(':')[1] + ',';
-      else r += '{x:model.Time,y:model.' + t + '},';
+      if(t.length > 0) {
+        if(t.trim().slice(0,1) == '{') r += '{x:model.' + t.split(':')[1].trim() + ',';
+        else if(t.trim().slice(-1) == '}') r += 'y:model.' + t.split(':')[1].slice(0,-1).trim() + '},';
+        else r += '{x:model.Time,y:model.' + t.trim() + '},';
+      }
     });
     return '[' + r + ']';
   }
@@ -68,6 +70,7 @@ class _Chart extends _Widget {
       borderColor: 'black',
       borderWidth: 1,
       fill: false,
+      lineTension: 0.5,
       pointRadius: 0,
       pointBackgroundColor: 'grey',
       pointBorderColor: 'grey',
@@ -99,9 +102,10 @@ class _Chart extends _Widget {
   setLines(data) {
     data.forEach((d,i) => {
       let l = this.chart.data.datasets[i];
-      l.showLine = d.show ? d.show : true;
+      l.showLine = d.show == undefined ? true : d.show;
       l.borderColor = d.color ? d.color : 'black';
       l.borderWidth = d.width ? d.width : 0.5;
+      l.lineTension = d.straight ? 0 : 0.5;
     });
   }
 
@@ -115,6 +119,7 @@ class _Chart extends _Widget {
     });
   }
 
+  /*
   update(withRefresh=true) {
     this.series.forEach((s,i) => {
       let d = this.chart.data.datasets[i];
@@ -126,6 +131,27 @@ class _Chart extends _Widget {
           d.pointRadius[n-1] = d.pointRadius[n-2];
           d.pointRadius[n-2] = 0;
         }
+      }
+    });
+    if(withRefresh) this.chart.update();
+  }
+  */
+  update(withRefresh=true) {
+    this.series.forEach((s,i) => {
+      let d = this.chart.data.datasets[i];
+      if(_Model.isNumber(s.x.value) && _Model.isNumber(s.y.value)) {
+        d.data.push({x: s.x.value, y: s.y.value});
+        if(d.lastOnly) {
+          let n = d.data.length;
+          if(n == 1) d.pointRadius = [d.pointRadius];
+          else {
+            d.pointRadius[n-1] = d.pointRadius[n-2];
+            d.pointRadius[n-2] = 0;
+          }
+        }
+      } else if(_Model.isArray(s.x.value) && _Model.isArray(s.y.value)) {
+        d.data = [];
+        s.x.value.forEach((v,j) => d.data.push({x: v, y: s.y.value[j]}));
       }
     });
     if(withRefresh) this.chart.update();

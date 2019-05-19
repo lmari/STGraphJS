@@ -18,13 +18,12 @@ _model_data = {
 
 _env_data = {
   simDelay: 100,
-  trace: 0,
   title: "Prezzo, domanda, offerta",
   charts: [
     { title: "chart1", top: 100, left: 10, width: 400,
       xaxis: { min: -0.5, max: 7.5, step: 1 },
       yaxis: { min: -0.5, max: 25.5, step: 2 },
-      series: "[prezzo]", //model
+      series: "[prezzo]",
       lines: [{ show: true, color: 'red', width: 1 }],
       points: [{ show: true, color: 'green', size: 10, lastonly: false }] },
   ],

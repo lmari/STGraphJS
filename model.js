@@ -21,15 +21,27 @@ class _Model {
     this.timeD = data.timeD;
     this.time = data.time0;
     this.Time = new Parameter("Time", this, data.time0);
+    if(trace>0) console.log('\n*** Initialization');
     data.parameters.forEach(x => eval(`this.${x.id} = new Parameter("${x.id}", this, ${_Model.isArray(x.val) ? "[" + x.val + "]" : x.val})`));
     data.variables.forEach(x => eval(`this.${x.id} = new Variable("${x.id}", this, ${x.out})`));
     for(let __x of data.variables) {
       let args = this.fixArgs(__x.args);
-      if(__x.eta != undefined) eval(`this.${__x.id}.setAlgebraic(${__x.eta}, ${args})`);
+      if(__x.eta != undefined) {
+        try {
+          eval(`this.${__x.id}.setAlgebraic(${__x.eta}, ${args})`);
+          if(trace>0) console.log(`${__x.id}.setAlgebraic(${__x.eta}, ${args})`);
+        } catch(e) { throw `_Model.constructor(): ERROR: evaluation of the eta function of variable ${__x.id} failed\n${this.showArgs(args)}\n(${e}).`; }
+      }
       if(__x.phi != undefined) {
         let init = this.fixInit(__x.init);
-        eval(`this.${__x.id}.setInitState('${init}')`);
-        eval(`this.${__x.id}.setState(${__x.phi}, ${args}, ${init})`);
+        try {
+          eval(`this.${__x.id}.setInitState('${init}')`);
+          if(trace>0) console.log(`${__x.id}.setInitState('${init}')`);
+        } catch(e) { throw `_Model.constructor(): ERROR: evaluation of the init state of variable ${__x.id} failed (${e}).`; }
+        try {
+          eval(`this.${__x.id}.setState(${__x.phi}, ${args}, ${init})`);
+          if(trace>0) console.log(`this.${__x.id}.setState(${__x.phi}, ${args}, ${init})`);
+        } catch(e) { throw `_Model.constructor(): ERROR: evaluation of the phi function of variable ${__x.id} failed (args: ${args}) (${e}).`; }
       }
     }
     this.execState = ExecState.READY;
@@ -66,6 +78,18 @@ class _Model {
     throw '_Model.fixInit(): ERROR_1.';
   }
 
+  /** showArgs - Show the arguments of a function (eta or phi), as specified in initialization,
+   * and their initial values.   * 
+   * @param {string} args string of arguments */
+  showArgs(args) {
+    let s = args.trim();
+    s = s.slice(1, -1).trim();
+    if(s.length == 0) return '';
+    let ret = '';
+    s.split(',').forEach(i => ret += `${i}: ${eval(i).value}\n`);
+    return ret;
+  }
+
   static list(arr) { return arr.map(x => x.name).join(', '); }
 
   sortVars() {
@@ -94,7 +118,7 @@ class _Model {
       }
       tempVars = tempVars2;
     } while(somethingDone);
-    if(tempVars.length > 0) window.alert('sortVars failed!')
+    if(tempVars.length > 0) throw '_Model.sortVars(): ERROR: sort failed.';
     this.vars = sortedVars;
     this.outvars = sortedVars.filter(x => x.isOutput);
   }
@@ -102,7 +126,10 @@ class _Model {
   isFirstStep() { return this.time == this.time0; }
 
   preExec(timed) {
-    this.sortVars();
+    try {
+      this.sortVars();
+      if(trace>0) console.log(`\n*** Sorted variables: ${_Model.list(this.vars)}`);
+    } catch(e) { throw e; }
     _timeD = this.timeD;
     this.initExec(timed);
   }
@@ -159,9 +186,9 @@ class _Model {
     this.execState = ExecState.EXECUTING;
     _time = this.Time.value = this.time;
     _Env.inEvalCallback1(this, timed);
-    this.vars.forEach(x => { if(x.isState() || x.isStateWithOut()) x.evalState(this.env.trace); });
-    this.vars.forEach(x => x.evalEta(this.env.trace));
-    this.vars.forEach(x => { if(x.isState() || x.isStateWithOut()) x.evalPhi(this.env.trace); });
+    this.vars.forEach(x => { if(x.isState() || x.isStateWithOut()) x.evalState(); });
+    this.vars.forEach(x => x.evalEta());
+    this.vars.forEach(x => { if(x.isState() || x.isStateWithOut()) x.evalPhi(); });
     _Env.inEvalCallback2(this, timed||stepped);
     if(timed) {
       this.time += this.timeD;
@@ -260,25 +287,23 @@ class Variable extends X {
   isState() { return this.type == VarType.STATE; }
   isStateWithOut() { return this.type == VarType.STATEWITHOUTPUT; }
 
-  evalState(trace) {
+  evalState() {
     if(this.isUndefined()) return;
     if(this.model.isFirstStep()) this.initState = eval(this.initStateAsString);
     this.state = this.model.isFirstStep() ? (this.initState instanceof X ? this.initState.value : this.initState) : this.nextState;
-    if(trace == 3) console.log(this.name + ' [evalState (state)]: ' + this.state);
   }
 
-  evalEta(trace) {
+  evalEta() {
     if(this.isUndefined()) return;
     if(this.isStateWithOut()) _this = this.state;
     this.value = this.isState() ? this.state : this.eta(...this.etaArgs.map(x => x instanceof X ? x.value : x));
-    if(trace == 1 && this.isOutput) console.log(this.name + ': ' + this.value);
-    else if(trace > 1) console.log(this.name + ' [evalEta (value)]: ' + this.value);
+    if(trace>1) console.log(this.name + ': ' + this.value);
   }
 
-  evalPhi(trace) {
+  evalPhi() {
     if(this.isUndefined()) return;
     _this = this.state;
     this.nextState = this.phi(...this.phiArgs.map(x => x instanceof X ? x.value : x));
-    if(trace == 3) console.log(this.name + ' [evalPhi (nextState)]: ' + this.nextState);
+    if(trace>2) console.log(this.name + ' (nextState): ' + this.nextState);
   }
 }
