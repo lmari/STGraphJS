@@ -8,19 +8,19 @@ _model_data = {
     { id: "d", val: 0.5 },
     { id: "f", val: 0.5 }],
   variables: [
-    { id: "domanda", eta: (x,y,z) => x+y*z, args: "[a,prezzo,b]" },
-    { id: "domandaPrec", phi: x => x, args: "[domanda]", init: "a" },
-    { id: "offerta", eta: (x,y,z) => x+y*z, args: "[c,d,prezzoPrec]" },
-    { id: "diffDomOff", eta: (x,y) => x-y, args: "[domandaPrec,offerta]" },
-    { id: "prezzo", out: true, eta: (x,y) => x*y, args: "[f,diffDomOff]" },
-    { id: "prezzoPrec", phi: x => x, args: "[prezzo]", init: "p0" }]
+    { id: "domanda", eta: (a,prezzo,b) => a+prezzo*b },
+    { id: "domandaPrec", phi: domanda => domanda, init: "a" },
+    { id: "offerta", eta: (c,d,prezzoPrec) => c+d*prezzoPrec },
+    { id: "diffDomOff", eta: (domandaPrec,offerta) => domandaPrec-offerta },
+    { id: "prezzo", out: true, eta: (f,diffDomOff) => f*diffDomOff },
+    { id: "prezzoPrec", phi: prezzo => prezzo, init: "p0" }]
 };
 
 _env_data = {
   simDelay: 100,
   title: "Prezzo, domanda, offerta",
   charts: [
-    { title: "chart1", top: 100, left: 10, width: 400,
+    { title: "chart", top: 100, left: 10, width: 400, height:250,
       xaxis: { min: -0.5, max: 7.5, step: 1 },
       yaxis: { min: -0.5, max: 25.5, step: 2 },
       series: "[prezzo]",

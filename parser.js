@@ -6,7 +6,13 @@ function Token(type, value) {
 }
 
 class _SP {
-	static getFun(lambda) { return lambda.toString().split("=>").map(x => x.trim()); }
+	static getFun(lambda) {
+		let l = lambda.toString();
+		let x = l.search('=>');
+		if(x == 1) throw "_SP.getFun(): ERROR: the function must be written as a lambda.";
+		return [l.slice(0,x).trim(), l.slice(x+2).trim()];
+	}
+	
 	static makeFun(arg, tokens) { return eval(`${arg} => ${tokens.map(token => token.value).join('')}`); }
 
 	static isDot(ch) { return ch == '.'; } static isComma(ch) { return ch == ','; }
@@ -15,6 +21,7 @@ class _SP {
 	static isDigit(ch) { return /\d/.test(ch); }
 	static isLetter(ch) { return /[a-z]|_/i.test(ch); }
 	static isQuote(ch) { return ch == '\'' || ch == '\"'; }
+	static isLambda(ch) { return /=>/.test(ch); }
 	static is2Operator(ch) { return /<=|==|!=|>=|&&|\|\||\*\*/.test(ch); }
 	static isOperator(ch) { return /!|<|>|\+|-|\*|\/|%|\^/.test(ch); }
 
@@ -23,6 +30,7 @@ class _SP {
 	static str() { return 'str' }; static isStr(t, p) { return t[p].type == _SP.str(); }
 	static fun() { return 'fun' }; static isFun(t, p) { return t[p].type == _SP.fun(); }
 	static ope() { return 'ope' }; static isOpe(t, p) { return t[p].type == _SP.ope(); }
+	static lam() { return 'lam' }; static isLam(t, p) { return t[p].type == _SP.lam(); }
 	static lpa() { return 'lpa' }; static isLpa(t, p) { return t[p].type == _SP.lpa(); }
 	static rpa() { return 'rpa' }; static isRpa(t, p) { return t[p].type == _SP.rpa(); }
 	static lsq() { return 'lsq' }; static isLsq(t, p) { return t[p].type == _SP.lsq(); }
@@ -64,7 +72,11 @@ class _SP {
 	  let i = 0;
 		let char, char2;
 	  while(i < str.length) {
-	    char = str[i];
+			char = str[i];
+			if(char == ' ') {
+				i++;	
+				continue;
+			}
 	    if(_SP.isLetter(char)) {
 	      while(i < str.length && (_SP.isLetter(char) || _SP.isDigit(char))) {
 	        stringBuffer.push(char);
@@ -104,6 +116,7 @@ class _SP {
 	    }
 			if(i < str.length-1) {
 				char2 = char + str[i+1];
+				if(_SP.isLambda(char2)) { tokens.push(new Token(_SP.lam(), char2)); i += 2; continue; }
 				if(_SP.is2Operator(char2)) { tokens.push(new Token(_SP.ope(), char2)); i += 2; continue; }
 			}
 			if(_SP.isLeftPar(char)) { tokens.push(new Token(_SP.lpa(), char)); i++; continue; }
@@ -113,7 +126,8 @@ class _SP {
 	    if(_SP.isComma(char)) { tokens.push(new Token(_SP.com(), char)); i++; continue; }
 			if(_SP.isOperator(char)) { tokens.push(new Token(_SP.ope(), char)); i++; continue; }
 			throw "_SP.tokenizer(): ERROR_3";
-	  }
+		}
+		if(trace>3) console.log('Tokenizer: ' + tokens.map(i => i.value).join(' '));
 		return tokens;
 	}
 

@@ -5,7 +5,7 @@ _model_data = {
     { id: "mu", val: 1.5 },
   ],
   variables: [
-    { id: "x", phi: "mu => mu*min(_this,1-_this)", args: "[mu]", init: "x0" },
+    { id: "x", phi: mu => mu*min(_this,1-_this), init: "x0" },
   ]
 };
 

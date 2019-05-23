@@ -9,7 +9,7 @@
 <script>
 'use strict';
 let env, model;
-let trace = 1; // 0: no trace; 1: only initialization; 2: also values; 3: also next states
+let trace = 0; // 0: no trace; 1: only initialization; 2: also values; 3: also next states; 4: also parser data
 
 Promise.all(loadScripts()).then(
   script => {
@@ -18,7 +18,7 @@ Promise.all(loadScripts()).then(
     env.setMenuBar();
     model = new _Model(env, _model_data);
     env.setWidgets(model);
-    model.exec(false);
+    model.exec(true);
   },
   error => alert(`Error: ${error.message}`)
 );

@@ -7,14 +7,14 @@ _model_data = {
     { id: "proj", val: [pi()/2-0.3,0.3] },
   ],
   variables: [
-    { id: "t0", phi: () => _this, args: "[]", init: "sysTime()" },
-    { id: "t1", out: true, eta: x => sysTime()-x, args: "[t0]" },
-    { id: "x", out: true, phi: (s,y) => _this+(s*(y-_this))*_timeD, args: "[s,y]", init: "0" },
-    { id: "y", out: true, phi: (r,x,z) => _this+(-x*z+r*x-_this)*_timeD, args: "[r,x,z]", init: "1" },
-    { id: "z", out: true, phi: (b,x,y) => _this+(-b*_this+x*y)*_timeD, args: "[b,x,y]", init: "1" },
-    { id: "tt", out: true, eta: (proj,x,y,z) => map3dto2d([x,y,z],[pi()/2-0.3,0.3]), args: "[proj,x,y,z]" },
-    { id: "xx", out: true, eta: tt => tt[0], args: "[tt]" },
-    { id: "yy", out: true, eta: tt => tt[1], args: "[tt]" },
+    { id: "t0", phi: () => _this, init: "sysTime()" },
+    { id: "t1", eta: t0 => sysTime()-t0 },
+    { id: "x", phi: (s,y) => _this+(s*(y-_this))*_timeD, init: "0" },
+    { id: "y", phi: (r,x,z) => _this+(-x*z+r*x-_this)*_timeD, init: "1" },
+    { id: "z", phi: (b,x,y) => _this+(-b*_this+x*y)*_timeD, init: "1" },
+    { id: "tt", eta: (proj,x,y,z) => map3dto2d([x,y,z],proj) },
+    { id: "xx", eta: tt => tt[0] },
+    { id: "yy", eta: tt => tt[1] },
   ]
 };
 

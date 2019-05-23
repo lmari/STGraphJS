@@ -25,23 +25,24 @@ class _Model {
     data.parameters.forEach(x => eval(`this.${x.id} = new Parameter("${x.id}", this, ${_Model.isArray(x.val) ? "[" + x.val + "]" : x.val})`));
     data.variables.forEach(x => eval(`this.${x.id} = new Variable("${x.id}", this, ${x.out})`));
     for(let __x of data.variables) {
-      let args = this.fixArgs(__x.args);
+      //let args = this.fixArgs(__x.args);
+      let args = this.fixArgs(__x);
       if(__x.eta != undefined) {
         try {
           eval(`this.${__x.id}.setAlgebraic(${__x.eta}, ${args})`);
           if(trace>0) console.log(`${__x.id}.setAlgebraic(${__x.eta}, ${args})`);
-        } catch(e) { throw `_Model.constructor(): ERROR: evaluation of the eta function of variable ${__x.id} failed\n${this.showArgs(args)}\n(${e}).`; }
+        } catch(e) { logErr('_Model.constructor()', `evaluation of the eta function of variable ${__x.id} failed\n${this.showArgs(args)}`, e); }
       }
       if(__x.phi != undefined) {
         let init = this.fixInit(__x.init);
         try {
           eval(`this.${__x.id}.setInitState('${init}')`);
           if(trace>0) console.log(`${__x.id}.setInitState('${init}')`);
-        } catch(e) { throw `_Model.constructor(): ERROR: evaluation of the init state of variable ${__x.id} failed (${e}).`; }
+        } catch(e) { logErr('_Model.constructor()', `evaluation of the init state of variable ${__x.id} failed`, e); }
         try {
           eval(`this.${__x.id}.setState(${__x.phi}, ${args}, ${init})`);
           if(trace>0) console.log(`this.${__x.id}.setState(${__x.phi}, ${args}, ${init})`);
-        } catch(e) { throw `_Model.constructor(): ERROR: evaluation of the phi function of variable ${__x.id} failed (args: ${args}) (${e}).`; }
+        } catch(e) { logErr('_Model.constructor()', `evaluation of the phi function of variable ${__x.id} failed\n${this.showArgs(args)}`, e); }
       }
     }
     this.execState = ExecState.READY;
@@ -56,11 +57,16 @@ class _Model {
   static isFunctionStr(x) { return _SP.isLetter(x.slice(0,1)) && (x.slice(-1) == ')'); }
   static isArrayStr(x) { return x.slice(0,1) == '['; }
 
+  showPars(withValue = true) { return this.pars.map(x => x.show(withValue)).join(', '); }
+  showVars(withValue = true) { return this.vars.map(x => x.show(withValue)).join(', '); }
+
   /** fixArgs - Add a leading 'this.' to each argument, so to localize it to the current model.
    * @param  {string} a string of the kind '[arg_1,arg_2,...], where each arg_i' is the id of a variable: numbers and functions are not allowed here
    * @return {string} a string of the kind '[this.arg_1,this.arg_2,...]' */
   fixArgs(a) {
-    let s = a.trim().slice(1, -1).trim();
+    //let s = a.trim().slice(1, -1).trim();
+    let s = getFun(a.eta ? a.eta : a.phi)[0].trim();
+    if(s.slice(0,1) == "(") s = s.slice(1, -1).trim();
     return (s.length == 0) ? '[]' : '[' + s.split(',').map(i => 'this.' + i).join(',') + ']';
   }
 
@@ -89,8 +95,6 @@ class _Model {
     s.split(',').forEach(i => ret += `${i}: ${eval(i).value}\n`);
     return ret;
   }
-
-  static list(arr) { return arr.map(x => x.name).join(', '); }
 
   sortVars() {
     let sortedVars = [];
@@ -128,7 +132,10 @@ class _Model {
   preExec(timed) {
     try {
       this.sortVars();
-      if(trace>0) console.log(`\n*** Sorted variables: ${_Model.list(this.vars)}`);
+      if(trace>0) {
+        console.log(`\n*** Parameters: ${this.showPars(false)}`);
+        console.log(`*** Sorted variables: ${this.showVars(false)}`);
+      }
     } catch(e) { throw e; }
     _timeD = this.timeD;
     this.initExec(timed);
@@ -202,9 +209,6 @@ class _Model {
     }
   }
 
-  listVars() { return Model.list(this.vars); }
-  showPars() { return this.pars.map(x => x.show()).join(', '); }
-  showVars() { return this.vars.map(x => x.show()).join(', '); }
 }
 
 
@@ -225,7 +229,7 @@ class X {
 
   isScalar() { return $.isNumeric(this.value); }
 
-  show() { return this.name + ':' + this.value; }
+  show(withValue) { return this.name + (withValue ? (':' + this.value) : ''); }
 }
 
 

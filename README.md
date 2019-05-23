@@ -20,6 +20,3 @@ both scalars, or one is scalar and one is vector, or both are vectors);
 * does not handle integration algorithms (no RKn: only and implicitly Euler);
 * has a smaller number of widgets;
 * has a smaller number of functions.
-
-Notes.
-* Tracing system: output to console for trace>0, _Env.inEvalCallback1, _Model.constructor, _Model.evalState, _Model.evalEta,  _Model.evalPhi

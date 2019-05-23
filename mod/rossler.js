@@ -7,12 +7,12 @@ _model_data = {
     { id: "proj", val: [pi()/2-0.3,0.3] },
   ],
   variables: [
-    { id: "x", out: true, phi: "(y,z) => _this+(-y-z)*_timeD", args: "[y,z]", init: "0" },
-    { id: "y", out: true, phi: "(a,x) => _this+(x+a*_this)*_timeD", args: "[a,x]", init: "1" },
-    { id: "z", out: true, phi: "(b,c,x) => _this+(b+_this*(x-c))*_timeD", args: "[b,c,x]", init: "1" },
-    { id: "tt", out: true, eta: "(proj,x,y,z) => map3dto2d([x,y,z],[pi()/2-0.3,0.3])", args: "[proj,x,y,z]" },
-    { id: "xx", out: true, eta: "tt => tt[0]", args: "[tt]" },
-    { id: "yy", out: true, eta: "tt => tt[1]", args: "[tt]" },
+    { id: "x", phi: (y,z) => _this+(-y-z)*_timeD, init: "0" },
+    { id: "y", phi: (a,x) => _this+(x+a*_this)*_timeD, init: "1" },
+    { id: "z", phi: (b,c,x) => _this+(b+_this*(x-c))*_timeD, init: "1" },
+    { id: "tt", eta: (proj,x,y,z) => map3dto2d([x,y,z],proj) },
+    { id: "xx", eta: tt => tt[0] },
+    { id: "yy", eta: tt => tt[1] },
   ]
 };
 

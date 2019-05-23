@@ -3,10 +3,11 @@ _model_data = {
   parameters: [
   ],
   variables: [
-    { id: "x", eta: "() => [cos(_time),sin(_time)*getFromWidget('slider1')]", args: "[]" },
-    { id: "cosx", eta: "x => x[0]", args: "[x]" },
-    { id: "sinx", eta: "x => x[1]", args: "[x]" },
-    { id: "clicked", eta: "() => getFromWidget('button1')", args: "[]" }]
+    { id: "x", eta: () => [cos(_time),sin(_time)*getFromWidget('slider1')] },
+    { id: "cosx", eta: x => x[0] },
+    { id: "sinx", eta: x => x[1] },
+    { id: "clicked", eta: () => getFromWidget('button1') },
+  ]
 };
 
 _env_data = {
