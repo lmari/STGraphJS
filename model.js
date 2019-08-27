@@ -1,6 +1,7 @@
-'use strict';
+/* global $, trace, _Utils, _Env, _SP */
+'use strict'
 
-var _time, _timeD, _this, _thread;
+var _time, _timeD, _this, _thread // eslint-disable-line no-unused-vars
 
 const ExecState = {
   READY: 0,
@@ -9,7 +10,7 @@ const ExecState = {
 };
 
 /** Core class dealing with a model. */
-class _Model {
+class _Model { // eslint-disable-line no-unused-vars
 
   constructor(env, data) {
     this.env = env;
@@ -21,41 +22,32 @@ class _Model {
     this.timeD = data.timeD;
     this.time = data.time0;
     this.Time = new Parameter("Time", this, data.time0);
-    if(trace>0) console.log('\n*** Initialization');
-    data.parameters.forEach(x => eval(`this.${x.id} = new Parameter("${x.id}", this, ${_Model.isArray(x.val) ? "[" + x.val + "]" : x.val})`));
+    if(trace>3) _Utils.logMsg('Initialization (with parsing)', 0);
+    else if(trace>0) _Utils.logMsg('Initialization', 0);
+    data.parameters.forEach(x => eval(`this.${x.id} = new Parameter("${x.id}", this, ${_Utils.isArray(x.val) ? "[" + x.val + "]" : x.val})`));
     data.variables.forEach(x => eval(`this.${x.id} = new Variable("${x.id}", this, ${x.out})`));
     for(let __x of data.variables) {
-      //let args = this.fixArgs(__x.args);
       let args = this.fixArgs(__x);
       if(__x.eta != undefined) {
         try {
           eval(`this.${__x.id}.setAlgebraic(${__x.eta}, ${args})`);
-          if(trace>0) console.log(`${__x.id}.setAlgebraic(${__x.eta}, ${args})`);
-        } catch(e) { logErr('_Model.constructor()', `evaluation of the eta function of variable ${__x.id} failed\n${this.showArgs(args)}`, e); }
+          if(trace>0) _Utils.logMsg(`${__x.id}.setAlgebraic(${__x.eta})`, 1);
+        } catch(e) { _Utils.logErr('_Model.constructor()', `evaluation of the eta function of variable ${__x.id} failed\n${this.showArgs(args)}`, e); }
       }
       if(__x.phi != undefined) {
         let init = this.fixInit(__x.init);
         try {
           eval(`this.${__x.id}.setInitState('${init}')`);
-          if(trace>0) console.log(`${__x.id}.setInitState('${init}')`);
-        } catch(e) { logErr('_Model.constructor()', `evaluation of the init state of variable ${__x.id} failed`, e); }
+          if(trace>0) _Utils.logMsg(`${__x.id}.setInitState('${init}')`, 1);
+        } catch(e) { _Utils.logErr('_Model.constructor()', `evaluation of the init state of variable ${__x.id} failed`, e); }
         try {
           eval(`this.${__x.id}.setState(${__x.phi}, ${args}, ${init})`);
-          if(trace>0) console.log(`this.${__x.id}.setState(${__x.phi}, ${args}, ${init})`);
-        } catch(e) { logErr('_Model.constructor()', `evaluation of the phi function of variable ${__x.id} failed\n${this.showArgs(args)}`, e); }
+          if(trace>0) _Utils.logMsg(`this.${__x.id}.setState(${__x.phi})`, 1);
+        } catch(e) { _Utils.logErr('_Model.constructor()', `evaluation of the phi function of variable ${__x.id} failed\n${this.showArgs(args)}`, e); }
       }
     }
     this.execState = ExecState.READY;
   }
-
-  static isNumber(x) { return typeof x == "number" };
-  static isArray(x) { return Array.isArray(x); }
-  static isFunction(x) { return typeof x == "function"; }
-
-  static isNumberStr(x) { return $.isNumeric(x); }
-  static isVariableStr(x) { return _SP.isLetter(x.slice(0,1)) && x.slice(-1) != ')'; }
-  static isFunctionStr(x) { return _SP.isLetter(x.slice(0,1)) && (x.slice(-1) == ')'); }
-  static isArrayStr(x) { return x.slice(0,1) == '['; }
 
   showPars(withValue = true) { return this.pars.map(x => x.show(withValue)).join(', '); }
   showVars(withValue = true) { return this.vars.map(x => x.show(withValue)).join(', '); }
@@ -65,7 +57,7 @@ class _Model {
    * @return {string} a string of the kind '[this.arg_1,this.arg_2,...]' */
   fixArgs(a) {
     //let s = a.trim().slice(1, -1).trim();
-    let s = getFun(a.eta ? a.eta : a.phi)[0].trim();
+    let s = _Utils.getFun(a.eta ? a.eta : a.phi)[0].trim();
     if(s.slice(0,1) == "(") s = s.slice(1, -1).trim();
     return (s.length == 0) ? '[]' : '[' + s.split(',').map(i => 'this.' + i).join(',') + ']';
   }
@@ -74,12 +66,12 @@ class _Model {
    * @param  {string} a string of the kind 'number' or 'function()' or 'variable', or an array of them
    * @return {string} a string of the kind 'number' or 'function()' or 'this.variable', or an array of them */
   fixInit(a) {
-    let s = a.trim();
-    if(_Model.isNumberStr(s) || _Model.isFunctionStr(s)) return s;
-    if(_Model.isVariableStr(s)) return 'this.' + s;
-    if(_Model.isArrayStr(s)) {
+    let s = ('' + a).trim();
+    if(_Utils.isNumberStr(s) || _Utils.isFunctionStr(s)) return s;
+    if(_Utils.isVariableStr(s)) return 'this.' + s;
+    if(_Utils.isArrayStr(s)) {
       s = s.slice(1, -1).trim();
-      return '[' + s.split(',').map(i => _Model.isVariable(i) ? 'this.' + i : i).join(',') + ']';
+      return '[' + s.split(',').map(i => _Utils.isVariable(i) ? 'this.' + i : i).join(',') + ']';
     }
     throw '_Model.fixInit(): ERROR_1.';
   }
@@ -96,6 +88,7 @@ class _Model {
     return ret;
   }
 
+  /** sortVars - Sort the model variables according to their execution order. */
   sortVars() {
     let sortedVars = [];
     let tempVars = [], tempVars2 = [];
@@ -128,14 +121,17 @@ class _Model {
   }
 
   isFirstStep() { return this.time == this.time0; }
+  isLastStep() { return this.time == this.time1; }
 
   preExec(timed) {
+    // eslint-disable-next-line no-useless-catch
     try {
       this.sortVars();
       if(trace>0) {
-        console.log(`\n*** Parameters: ${this.showPars(false)}`);
-        console.log(`*** Sorted variables: ${this.showVars(false)}`);
+        _Utils.logMsg(`Parameters: ${this.showPars(false)}`, 0);
+        _Utils.logMsg(`Sorted variables: ${this.showVars(false)}`, 0);
       }
+      if(trace>1) _Utils.logMsg('Evaluation', 0);
     } catch(e) { throw e; }
     _timeD = this.timeD;
     this.initExec(timed);
@@ -189,6 +185,9 @@ class _Model {
     this.execState = ExecState.READY;
   }
 
+  /** Core wrapper execution handler. 
+   * @param {boolean} timed timed execution
+   * @param {boolean} stepped stepped execution */
   evalHelper(timed, stepped) {
     this.execState = ExecState.EXECUTING;
     _time = this.Time.value = this.time;
@@ -230,6 +229,7 @@ class X {
   isScalar() { return $.isNumeric(this.value); }
 
   show(withValue) { return this.name + (withValue ? (':' + this.value) : ''); }
+
 }
 
 
@@ -242,7 +242,7 @@ class Parameter extends X {
 }
 
 
-class Variable extends X {
+class Variable extends X { // eslint-disable-line no-unused-vars
 
   constructor(name, model, isOutput=false) {
     super(name, model, 0);
@@ -301,13 +301,14 @@ class Variable extends X {
     if(this.isUndefined()) return;
     if(this.isStateWithOut()) _this = this.state;
     this.value = this.isState() ? this.state : this.eta(...this.etaArgs.map(x => x instanceof X ? x.value : x));
-    if(trace>1) console.log(this.name + ': ' + this.value);
+    if(trace>1) _Utils.logMsg(this.name + ': ' + this.value, 1);
   }
 
   evalPhi() {
     if(this.isUndefined()) return;
     _this = this.state;
     this.nextState = this.phi(...this.phiArgs.map(x => x instanceof X ? x.value : x));
-    if(trace>2) console.log(this.name + ' (nextState): ' + this.nextState);
+    if(trace>2) _Utils.logMsg(this.name + ' (nextState): ' + this.nextState, 1);
   }
+  
 }

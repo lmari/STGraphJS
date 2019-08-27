@@ -1,4 +1,5 @@
-'use strict';
+/* global $, _InputWidget */
+'use strict'
 
 class _Slider extends _InputWidget {
   constructor(model, data) {

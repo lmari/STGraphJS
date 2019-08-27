@@ -1,4 +1,5 @@
-'use strict';
+/* global $, _Widget */
+'use strict'
 
 class _Table extends _Widget {
   constructor(model, data, series, containerId) {
@@ -54,7 +55,7 @@ class _Table extends _Widget {
     let cell;
     if(!this.onlyLasts || this.domEl[0].rows.length == 1) {
       row = this.domEl[0].insertRow(-1);
-      this.series.forEach(x => row.insertCell(-1));
+      this.series.forEach(() => row.insertCell(-1));
     }
     this.series.forEach((x,i) => {
       cell = (this.lastOnly && this.lastOnly[i]) ? this.domEl[0].rows[1].cells[i] : row.cells[i];

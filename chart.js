@@ -1,4 +1,5 @@
-'use strict';
+/* global $, _Utils, _Widget, Chart */
+'use strict'
 
 class _Chart extends _Widget {
 
@@ -119,27 +120,10 @@ class _Chart extends _Widget {
     });
   }
 
-  /*
   update(withRefresh=true) {
     this.series.forEach((s,i) => {
       let d = this.chart.data.datasets[i];
-      d.data.push({x: s.x.value, y: s.y.value});
-      if(d.lastOnly) {
-        let n = d.data.length;
-        if(n == 1) d.pointRadius = [d.pointRadius];
-        else {
-          d.pointRadius[n-1] = d.pointRadius[n-2];
-          d.pointRadius[n-2] = 0;
-        }
-      }
-    });
-    if(withRefresh) this.chart.update();
-  }
-  */
-  update(withRefresh=true) {
-    this.series.forEach((s,i) => {
-      let d = this.chart.data.datasets[i];
-      if(_Model.isNumber(s.x.value) && _Model.isNumber(s.y.value)) {
+      if(_Utils.isNumber(s.x.value) && _Utils.isNumber(s.y.value)) {
         d.data.push({x: s.x.value, y: s.y.value});
         if(d.lastOnly) {
           let n = d.data.length;
@@ -149,7 +133,7 @@ class _Chart extends _Widget {
             d.pointRadius[n-2] = 0;
           }
         }
-      } else if(_Model.isArray(s.x.value) && _Model.isArray(s.y.value)) {
+      } else if(_Utils.isArray(s.x.value) && _Utils.isArray(s.y.value)) {
         d.data = [];
         s.x.value.forEach((v,j) => d.data.push({x: v, y: s.y.value[j]}));
       }

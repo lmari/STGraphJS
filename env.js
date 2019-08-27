@@ -1,8 +1,10 @@
-'use strict';
+/* global $, trace, _time, _Utils, ExecState, env:writable, model:writable, _env_data, _model_data, _Model */
+/* global _Widget, _Table, _Chart, _Button, _Slider */
+'use strict'
 
-let _fileLoader = document.createElement('INPUT');
-_fileLoader.setAttribute('type', 'file');
-_fileLoader.addEventListener('change', getFile);
+let _fileLoader = document.createElement('INPUT')
+_fileLoader.setAttribute('type', 'file')
+_fileLoader.addEventListener('change', getFile)
 
 function getFile() {
   if(_fileLoader.files.length == 0) return null;
@@ -19,7 +21,9 @@ function getFile() {
   reader.readAsText(_fileLoader.files[0]);
 }
 
-let _barEnd;
+let _barEnd
+let _skipSteps
+let _steps = 0
 
 /** Default browser environment for executing models and dealing with widgets. */
 class _Env {
@@ -28,7 +32,8 @@ class _Env {
    * @param {object} data, as in the _env_data variable of a model file */
   constructor(data) {
     this.data = data;
-    this.simulationDelay = data.simDelay;
+    this.simulationDelay = data.simDelay || 1;
+    _skipSteps = data.skipSteps || 1;
     this.resetWidgets();
   }
 
@@ -104,6 +109,8 @@ class _Env {
     if(this.data.buttons) this.data.buttons.forEach(__x => new _Button(model, __x));
     if(this.data.sliders) this.data.sliders.forEach(__x => new _Slider(model, __x));
     this.fixMenuBar();
+    document.getElementById("spinner").style.display = "none";
+
   }
 
   runKey() {
@@ -130,6 +137,7 @@ class _Env {
    * @param  {type} model       description
    * @param  {type} interactive description */
   static preEvalCallback(model, interactive) {
+    if(interactive) ;
     model.env._charts.forEach(chart => chart.reset());
     model.env._tables.forEach(table => table.reset());
     _barEnd = Math.round((model.time1+model.timeD-model.time0)/model.timeD);
@@ -141,18 +149,23 @@ class _Env {
    * @param  {_Model} model
    * @param  {Boolean} interactive */
   static inEvalCallback1(model, interactive) {
-    if(trace>1) console.log('\n*** time step: ' + _time);
+    if(model || interactive) ;
+    if(trace>1) _Utils.logMsg(`time step: + ${_time}`, 0);
   }
 
   /** @static inEvalCallback2 - Default callback: after each evaluation step.
    * @param {_Model} model
    * @param {Boolean} interactive */
   static inEvalCallback2(model, interactive) {
-    model.env._charts.forEach(chart => chart.update(interactive));
-    model.env._tables.forEach(table => table.update());
-    if(interactive) {
-      $('#progressbar').progressbar('value', $('#progressbar').progressbar('value')+1);
+    let refresh = true;
+    if(_skipSteps > 1) {
+      _steps++;
+      if(_steps == _skipSteps || model.isLastStep()) _steps = 0;
+      else refresh = false;
     }
+    model.env._charts.forEach(chart => chart.update(interactive && refresh));
+    model.env._tables.forEach(table => table.update());
+    if(interactive) $('#progressbar').progressbar('value', $('#progressbar').progressbar('value')+1);
   }
 
   /** @static postEvalCallback - Default callback: after completing evaluation.

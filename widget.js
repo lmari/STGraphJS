@@ -1,4 +1,5 @@
-'use strict';
+/* global $ */
+'use strict'
 
 class _Widget {
   constructor() {}
@@ -30,7 +31,7 @@ class _Widget {
   }
 }
 
-class _InputWidget extends _Widget {
+class _InputWidget extends _Widget { // eslint-disable-line no-unused-vars
   constructor() {
     super();
   }

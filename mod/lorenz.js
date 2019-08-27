@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 _model_data = {
   time0: 0, time1: 100, timeD: 0.03125,
   parameters: [
@@ -9,9 +10,9 @@ _model_data = {
   variables: [
     { id: "t0", phi: () => _this, init: "sysTime()" },
     { id: "t1", eta: t0 => sysTime()-t0 },
-    { id: "x", phi: (s,y) => _this+(s*(y-_this))*_timeD, init: "0" },
-    { id: "y", phi: (r,x,z) => _this+(-x*z+r*x-_this)*_timeD, init: "1" },
-    { id: "z", phi: (b,x,y) => _this+(-b*_this+x*y)*_timeD, init: "1" },
+    { id: "x", phi: (s,y) => _this+(s*(y-_this))*_timeD, init: 0 },
+    { id: "y", phi: (r,x,z) => _this+(-x*z+r*x-_this)*_timeD, init: 1 },
+    { id: "z", phi: (b,x,y) => _this+(-b*_this+x*y)*_timeD, init: 1 },
     { id: "tt", eta: (proj,x,y,z) => map3dto2d([x,y,z],proj) },
     { id: "xx", eta: tt => tt[0] },
     { id: "yy", eta: tt => tt[1] },
@@ -19,8 +20,9 @@ _model_data = {
 };
 
 _env_data = {
-  simDelay: 1,
   trace: 0,
+  simDelay: 1,
+  skipSteps: 1,
   title: "Lorenz attractor",
   charts: [
     { title: "X,Y projection", top: 100, left: 10, width: 300, height:200,

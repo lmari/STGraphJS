@@ -1,5 +1,5 @@
 _model_data = {
-  time0: 0, time1: 10, timeD: 0.01,
+  time0: 0, time1: 10, timeD: 0.1,
   parameters: [
   ],
   variables: [

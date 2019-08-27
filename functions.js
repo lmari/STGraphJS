@@ -1,7 +1,12 @@
+/* eslint-disable no-unused-vars */
+/* global _Utils, env */
+'use strict'
+
 // Type helpers
-var isNumber = x => typeof x == "number";
+var isNumber = x => typeof x == 'number';
 var isArray = x => Array.isArray(x);
-var isFunction = x => typeof x == "function";
+var isFunction = x => typeof x == 'function';
+var isObject = x => typeof x == 'object';
 
 /** funHelper1 - Helper for making monadic functions polymorphic.
  * @param  {Function} f function to be made polymorphic
@@ -45,24 +50,25 @@ function pairscan(f,a) { return a.map((v,i,b) => i==0 ? b[0] : f(b[i-1],b[i])); 
 
 // Sequence generator
 function seq(x,y,z) {
-  if(!isNumber(x)) throw '[model.js]seq(): ERROR_1.';
+  if(!isNumber(x)) _Utils.logErr('[functions.js]seq()', `argument '${x}' must be a number`, new Error('Syntax error'));
   if(y == null) {
     x = Math.round(x);
-  	if(x <= 0) throw '[model.js]seq(): ERROR_2.';
+    if(x <= 0) _Utils.logErr('[functions.js]seq()', `argument '${x}' must be greater than zero`, new Error('Syntax error'));
     return Array.from(Array(x).keys());
   }
-  if(!isNumber(y)) throw '[model.js]seq(): ERROR_3.';
+  if(!isNumber(y)) _Utils.logErr('[functions.js]seq()', `argument '${y}' must be a number`, new Error('Syntax error'));
   if(z == null) {
-  	x = Math.round(x);
+    x = Math.round(x);
     y = Math.round(y);
-  	if(y <= x) throw '[model.js]seq(): ERROR_4.';
+    if(y <= x) throw _Utils.logErr('[functions.js]seq()', `argument '${y}' must be greater than argument '${x}'`, new Error('Syntax error'));
     let res = [];
     for(let i=x; i<y; i++) res.push(i);
     return res;
   }
-  if(!isNumber(z)) throw '[model.js]seq(): ERROR_5.';
-  if(z == 0 || x == y) throw '[model.js]seq(): ERROR_6.';
-  if((z > 0 && x > y) || (z < 0 && x<y)) throw '[model.js]seq(): ERROR_7.';
+  if(!isNumber(z)) _Utils.logErr('[functions.js]seq()', `argument '${z}' must be a number`, new Error('Syntax error'));
+  if(z == 0) _Utils.logErr('[functions.js]seq()', `argument '${z}' cannot be zero`, new Error('Syntax error'));
+  if(z > 0 && x > y) _Utils.logErr('[functions.js]seq()', `argument '${z}' must be negative`, new Error('Syntax error'));
+  if(z < 0 && x<y) _Utils.logErr('[functions.js]seq()', `argument '${z}' must be positive`, new Error('Syntax error'));
   let res = [];
   if(z > 0) {
     while(x < y) { res.push(x); x+=z; }
@@ -73,11 +79,17 @@ function seq(x,y,z) {
 }
 
 // Array generator
+//uses:
+// array(num, num): array(5, 0)
+// array(num, fun): array(5, () => rand()) or array(5, i => 2*i)
 function array(x,f) {
+  if(!isNumber(x)) _Utils.logErr('[functions.js]array()', `argument '${x}' must be a number`, new Error('Syntax error'));
+  x = Math.round(x);
+  if(x <= 0) _Utils.logErr('[functions.js]array()', `argument '${x}' must be greater than zero`, new Error('Syntax error'));
   let res = [];
-  if(isNumber(f)) for(let i=0; i<x; i++) res.push(f);
-  else if(isFunction(f)) for(let i=0; i<x; i++) res.push(f());
-  else throw '[model.js]array(): ERROR_1.';
+  if(isNumber(f) || isObject(f)) for(let i=0; i<x; i++) res.push(f);
+  else if(isFunction(f)) res = seq(x).map(f);
+  else _Utils.logErr('[functions.js]array()', `argument '${f}' must be either a number or a function`, new Error('Syntax error'));
   return res;
 }
 
@@ -96,7 +108,7 @@ function rand(x,y) {
   return x+(y-x)*Math.random();
 }
 
-function pi() { return Math.PI; }
+function pi() { return Math.PI; } 
 
 function sysTime() { return new Date().getTime(); }
 

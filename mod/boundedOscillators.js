@@ -1,10 +1,10 @@
 _model_data = {
-  time0: 0, time1: 100, timeD: 0.0025,
+  time0: 0, time1: 20, timeD: 0.0025,
   parameters: [
     { id: "n", val: 3 },
     { id: "k", val: 0.02 },
     { id: "p0", val: [0.1,0.6,0.9] },
-    { id: "y", val: array(3,0) },
+    { id: "y", val: [0,0,0] },
   ],
   variables: [
     { id: "a", eta: (n,k,d) => k*(seq(n).map(i => d[i]/abs(d[i]^3)-d[i+1]/abs(d[i+1]^3))), args: "[n,k,d]" },
@@ -16,6 +16,7 @@ _model_data = {
 
 _env_data = {
   simDelay: 1,
+  skipSteps: 20,
   title: "Bounded oscillator",
   charts: [
     { title: "chart1", top: 100, left: 10, width: 400,

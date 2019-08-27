@@ -6,19 +6,22 @@ _model_data = {
     { id: "b", val: -0.5 },
     { id: "c", val: 50 },
     { id: "d", val: 0.5 },
-    { id: "f", val: 0.5 }],
+    { id: "f", val: 0.5 },
+  ],
   variables: [
     { id: "domanda", eta: (a,prezzo,b) => a+prezzo*b },
     { id: "domandaPrec", phi: domanda => domanda, init: "a" },
     { id: "offerta", eta: (c,d,prezzoPrec) => c+d*prezzoPrec },
     { id: "diffDomOff", eta: (domandaPrec,offerta) => domandaPrec-offerta },
     { id: "prezzo", out: true, eta: (f,diffDomOff) => f*diffDomOff },
-    { id: "prezzoPrec", phi: prezzo => prezzo, init: "p0" }]
+    { id: "prezzoPrec", phi: prezzo => prezzo, init: "p0" },
+  ]
 };
 
 _env_data = {
   simDelay: 100,
-  title: "Prezzo, domanda, offerta",
+  skipSteps: 3,
+  title: "Keynes",
   charts: [
     { title: "chart", top: 100, left: 10, width: 400, height:250,
       xaxis: { min: -0.5, max: 7.5, step: 1 },

@@ -6,12 +6,6 @@ function Token(type, value) {
 }
 
 class _SP {
-	static getFun(lambda) {
-		let l = lambda.toString();
-		let x = l.search('=>');
-		if(x == 1) throw "_SP.getFun(): ERROR: the function must be written as a lambda.";
-		return [l.slice(0,x).trim(), l.slice(x+2).trim()];
-	}
 	
 	static makeFun(arg, tokens) { return eval(`${arg} => ${tokens.map(token => token.value).join('')}`); }
 
@@ -78,7 +72,7 @@ class _SP {
 				continue;
 			}
 	    if(_SP.isLetter(char)) {
-	      while(i < str.length && (_SP.isLetter(char) || _SP.isDigit(char))) {
+	      while(i < str.length && (_SP.isLetter(char) || _SP.isDigit(char) || _SP.isDot(char))) {
 	        stringBuffer.push(char);
 	        char = str[++i];
 	      }
@@ -127,7 +121,7 @@ class _SP {
 			if(_SP.isOperator(char)) { tokens.push(new Token(_SP.ope(), char)); i++; continue; }
 			throw "_SP.tokenizer(): ERROR_3";
 		}
-		if(trace>3) console.log('Tokenizer: ' + tokens.map(i => i.value).join(' '));
+		if(trace>3) _Utils.logMsg('Tokenizer: ' + tokens.map(i => i.value).join(' '), 1);
 		return tokens;
 	}
 
@@ -241,12 +235,13 @@ class _SP {
 		let t = _SP.fixPrefixOperators(tokens);
 		let p;
 		for(let i=1; i<7; i++) while((p = _SP.findInOperator(t, i)) != -1) t = _SP.prefixInfixOperator(t, p);
+		if(trace>3) _Utils.logMsg('Transformer: ' + t.map(i => i.value).join(' '), 1);
 		return t;
 	}
 
 	static fix(lambda) {
 		let arg, fun;
-		[arg, fun] = _SP.getFun(lambda);
+		[arg, fun] = _Utils.getFun(lambda);
 		let tokens = _SP.tokenize(fun);
 		tokens = _SP.transform(tokens);
 		return _SP.makeFun(arg, tokens);
