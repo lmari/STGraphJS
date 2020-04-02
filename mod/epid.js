@@ -41,7 +41,7 @@ _env_data = {
   ],
   sliders: [
     { title: 'Tasso di infezione', top: 550, left: 10, height: 100,
-      min: 0, max: 1, step: 0.01,
+      min: 0, max: 1, step: 0.01, initialValue: 0.03,
       tooltip: 'Tasso di infezione' },
     { title: 'Tasso di guarigione', top: 550, left: 210, height: 100,
       min: 0, max: 1, step: 0.01,
