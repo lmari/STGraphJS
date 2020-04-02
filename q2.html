@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<link rel='stylesheet' href='./res/jquery-ui.min.css' type='text/css'>
+<link rel='stylesheet' href='./res/q.css' type='text/css'>
+<script src='./res/jquery.min.js'></script>
+<script src='./res/jquery-ui.min.js'></script>
+<script src='./res/Chart.bundle.min.js'></script>
+<script src='./loader.js'></script>
+<script src='./env.js'></script>
+<script src='./model.js'></script>
+<script src='./parser.js'></script>
+<script src='./functions.js'></script>
+<script src='./widget.js'></script>
+<script src='./chart.js'></script>
+<script src='./table.js'></script>
+<script src='./button.js'></script>
+<script src='./slider.js'></script>
+<script src='./mod/epid2.js'></script>
+<script>
+'use strict'
+/*
+ * parameters cannot include functions
+ * skipSteps does not work correctly in stepped execution
+*/
+let env, model
+let trace = 0 // 0: no trace; 1: only initialization; 2: also values; 3: also next states; 4: also parser data
+
+$('document').ready(() => {
+  env = new _Env(_env_data)
+  env.setPageTitle()
+  env.setMenuBar()
+  model = new _Model(env, _model_data)
+  env.setWidgets(model)
+  model.exec(true)
+});
+</script>
+</head>
+<body><div id="spinner"></div></body>
+</html>

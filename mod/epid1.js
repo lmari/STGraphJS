@@ -22,14 +22,14 @@ _env_data = {
   trace: 0,
   title: 'Epidemia (modello 1: popolazione finita)',
   charts: [
-    { title: "Infetti e risolti", top: 80, left: 10, width: 500,
+    { title: "Infetti (rosso) e risolti (blu)", top: 80, left: 10, width: 500,
       xaxis: { min: 0, max: 100, step: 20 },
       yaxis: { min: 0 },
       series: "[{ x: Time, y: I }, { x: Time, y: R }]",
       lines: [{ show: true, color: 'red', width: 1 }, { show: true, color: 'blue', width: 1 }], },
   ],
   tables: [
-    { title: 'mortiTot', top: 200, left: 550,
+    { title: ' ', top: 200, left: 550,
       series: "[S,I,R]",
       decimals: [0,0,0], alignments: ['center','center','center'], lastonly: [true,true,true] },
   ],
